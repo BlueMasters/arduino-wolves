@@ -12,6 +12,7 @@ struct App {
   enum configMode configMode;
   bool emergency;
   struct wolvesConfig config;
-};
+  int DI;
+} app;
 
 #endif
