@@ -1,5 +1,5 @@
-#ifndef CAPTOR__H
-#define CAPTOR__H
+#ifndef RFIDSENSOR__H
+#define RFIDSENSOR__H
 
 #include <Arduino.h>
 #include "StateMachine.h"
@@ -11,13 +11,13 @@ class RFIDSensor : public StateMachine {
 public:
   void begin(int pin);
   boolean hasChanged();
-  rfid_uid cardId();
+  struct rfidUid cardId();
   enum rfidSensorStatus rfidSensorStatus();
 
 private:
   enum rfidSensorStatus _status;
   bool _changed;
-  rfid_uid _cardId;
+  struct rfidUid _cardId;
   int _pin;
 };
 
