@@ -39,10 +39,10 @@ void Solenoid::tick() {
     if (app.emergency) {
       fire(now);
       _led.green();
-    } else if (_sensor.rfidSensorStatus() == valid_card) {
+    } else if (_sensor.rfidSensorStatus() == VALID_CARD) {
       fire(now);
       _led.green();
-    } else if (_sensor.rfidSensorStatus() == invalid_card) {
+    } else if (_sensor.rfidSensorStatus() == INVALID_CARD) {
       fire(now);
       _led.red();
     } else {

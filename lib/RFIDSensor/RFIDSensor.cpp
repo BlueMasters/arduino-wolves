@@ -16,6 +16,7 @@
 
 #include <Arduino.h>
 #include "RFIDSensor.h"
+#include <MFRC522.h>
 
 void RFIDSensor::begin() {
     // TODO

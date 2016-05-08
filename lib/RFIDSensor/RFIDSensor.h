@@ -5,7 +5,7 @@
 #include "StateMachine.h"
 #include "WolvesTypes.h"
 
-enum rfidSensorStatus { no_card, invalid_card, valid_card } ;
+enum rfidSensorStatus { NO_CARD, INVALID_CARD, VALID_CARD } ;
 
 class RFIDSensor : public StateMachine {
 public:
