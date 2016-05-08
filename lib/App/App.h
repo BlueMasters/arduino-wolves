@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include "WolvesTypes.h"
 
+#define DEBUG true
+
 enum globalMode {globmode_NORMAL, globmode_LEARN };
 enum configMode {confmode_DI, confmode_DF, confmode_None};
 
