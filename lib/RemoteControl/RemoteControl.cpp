@@ -135,3 +135,7 @@ void RemoteControl::handleConfirm(){
     _state = IR_STATE_WAIT_CMD;
   }
 }
+
+IRKey RemoteControl::keypressed(){
+  return _lastkey;
+}
