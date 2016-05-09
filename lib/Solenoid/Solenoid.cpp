@@ -19,16 +19,21 @@
 #include "App.h"
 
 // Give time for the disk to fall out of the RFID sensor field
-#define SOLENOID_WAITING_TIME 1000
+#define SOLENOID_WAITING_TIME 1000 // msec
 
 void Solenoid::begin() {
     _state = SOLENOID_IDLE;
 }
 
 void Solenoid::fire(long t) {
-    _state = SOLENOID_FIRED;
     _timestamp = t;
     digitalWrite(_impulsePin, HIGH);
+}
+
+void Solenoid::release(long t) {
+    _timestamp = t;
+    digitalWrite(_impulsePin, LOW);
+    _led.off();
 }
 
 void Solenoid::tick() {
@@ -38,24 +43,31 @@ void Solenoid::tick() {
     case SOLENOID_IDLE:
         if (app.emergency) {
             fire(now);
+            _state = SOLENOID_FIRED;
             _led.green();
         } else if (_sensor.rfidSensorStatus() == VALID_CARD) {
-            fire(now);
             _led.green();
+            _state = SOLENOID_FROZEN;
         } else if (_sensor.rfidSensorStatus() == INVALID_CARD) {
-            fire(now);
             _led.red();
-        } else {
+            _state = SOLENOID_FROZEN;
+        } else { // Idle and no reason to change.
             digitalWrite(_impulsePin, LOW);
             _led.off();
         }
         break;
 
+    case SOLENOID_FROZEN:
+        if (now - _timestamp > app.DF) {
+            fire(now);
+            _state = SOLENOID_FIRED;
+            // I decided to not clear the LED here. It will stay
+            // a little bit longer and will be cleared in the next state.
+        } break;
+
     case SOLENOID_FIRED:
         if (now - _timestamp > app.DI) {
-            _timestamp = now;
-            digitalWrite(_impulsePin, LOW);
-            _led.off();
+            release(now);
             _state = SOLENOID_WAITING;
         } break;
 
