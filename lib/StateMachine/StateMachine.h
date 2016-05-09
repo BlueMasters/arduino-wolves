@@ -5,7 +5,7 @@
 
 class StateMachine {
 public:
-virtual void tick() = 0;
+    virtual void tick() = 0;
 };
 
 #endif

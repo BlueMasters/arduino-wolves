@@ -13,13 +13,13 @@ enum configMode {confmode_DI, confmode_DF, confmode_None};
 
 class App {
 public:
-uint8_t pinCode[4+1];
-enum globalMode globalMode;
-enum configMode configMode;
-bool emergency;
-struct wolvesConfig config;
-uint8_t DI;
-uint8_t DF;
+    uint8_t pinCode[4+1];
+    enum globalMode globalMode;
+    enum configMode configMode;
+    bool emergency;
+    struct wolvesConfig config;
+    uint8_t DI;
+    uint8_t DF;
 };
 
 extern App app;

@@ -46,7 +46,7 @@ void RemoteControl::tick(){
             _lastkey = IR_KEY_CANCEL;
             resetState();
             return; //
-        }else{
+        } else {
             // else, simply reset the state
             resetState();
         }
@@ -60,7 +60,7 @@ void RemoteControl::tick(){
         _lastrecvtime = now;
         _irrecv.resume(); // Receive the next value
 
-    }else{
+    } else {
         // no key received, nothing to do
         return;
     }
@@ -103,7 +103,7 @@ void RemoteControl::handlePinCode(){
             _state = IR_STATE_WAIT_CMD;
             _pincode_idx = 0;
         }
-    }else{
+    } else {
         _pincode_idx = 0; // reset
     }
 }

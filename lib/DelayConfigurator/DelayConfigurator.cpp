@@ -21,7 +21,7 @@ void DelayConfigurator::tick(){
             if(_tempvalue > _min) _tempvalue -= _increment;
             break;
         }
-    }else{
+    } else {
         if(app.configMode == _myMode) {
             enable();
         }

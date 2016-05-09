@@ -6,16 +6,15 @@
 class LED {
 
 public:
-LED(int red, int green) : _red(red), _green(green) {
-};
-void begin();
-void off();
-void red();
-void green();
+    LED(int red, int green) : _red(red), _green(green) {};
+    void begin();
+    void off();
+    void red();
+    void green();
 
 private:
-int _red;
-int _green;
+    int _red;
+    int _green;
 };
 
 

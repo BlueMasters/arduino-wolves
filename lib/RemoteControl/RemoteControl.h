@@ -38,24 +38,23 @@ enum IRState {
 
 class RemoteControl : public StateMachine {
 public:
-RemoteControl(int pin) : _irrecv(pin), _state(IR_STATE_WAIT_PIN) {
-};
-void begin();
-virtual void tick();
-IRKey keypressed();
+    RemoteControl(int pin) : _irrecv(pin), _state(IR_STATE_WAIT_PIN) {};
+    void begin();
+    virtual void tick();
+    IRKey keypressed();
 
 private:
-void handlePinCode();
-void handleCmd();
-void handleConfirm();
-int lastKeyToInt();
-void resetState();
+    void handlePinCode();
+    void handleCmd();
+    void handleConfirm();
+    int lastKeyToInt();
+    void resetState();
 
-IRrecv _irrecv;
-long _lastrecvtime;
-IRKey _lastkey;
-IRState _state;
-int _pincode_idx;
+    IRrecv _irrecv;
+    long _lastrecvtime;
+    IRKey _lastkey;
+    IRState _state;
+    int _pincode_idx;
 };
 
 #endif
