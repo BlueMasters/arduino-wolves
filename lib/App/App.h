@@ -21,7 +21,7 @@ public:
     struct wolvesConfig config;
     uint8_t DI;
     uint8_t DF;
-    RGBLED statusLed;
+    RGBLED* statusLed;
 };
 
 extern App app;

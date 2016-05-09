@@ -2,6 +2,7 @@
 #include <Streaming.h>
 #include "App.h"
 #include "LED.h"
+#include "RGBLED.h"
 #include "RFIDSensor.h"
 #include "Solenoid.h"
 
@@ -26,6 +27,7 @@ Solenoid solenoids[N_OF_QUESTIONS] = {
 };
 
 void setup() {
+    app.statusLed = new RGBLED(0,0,0);
     for (int i = 0; i < N_OF_QUESTIONS; i++) {
         leds[i].begin();
         sensors[i].begin();
