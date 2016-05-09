@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "WolvesTypes.h"
+#include "RGBLED.h"
 
 #define DEBUG true
 #define DI_GRANULARITY 100 // 1 unit means +100 ms
@@ -20,6 +21,7 @@ public:
     struct wolvesConfig config;
     uint8_t DI;
     uint8_t DF;
+    RGBLED statusLed;
 };
 
 extern App app;
