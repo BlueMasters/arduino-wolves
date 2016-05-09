@@ -27,18 +27,19 @@ enum solenoidState {SOLENOID_IDLE, SOLENOID_FIRED, SOLENOID_WAITING};
 
 class Solenoid : public StateMachine {
 public:
-  Solenoid(int impulsePin, RFIDSensor sensor, LED led) :
-    _impulsePin(impulsePin), _sensor(sensor), _led(led) {};
-  void begin();
-  void tick();
+Solenoid(int impulsePin, RFIDSensor sensor, LED led) :
+    _impulsePin(impulsePin), _sensor(sensor), _led(led) {
+};
+void begin();
+void tick();
 
 private:
-  int _impulsePin;
-  RFIDSensor _sensor;
-  LED _led;
-  solenoidState _state;
-  long _timestamp;
-  void fire(long t);
+int _impulsePin;
+RFIDSensor _sensor;
+LED _led;
+solenoidState _state;
+long _timestamp;
+void fire(long t);
 };
 
 #endif

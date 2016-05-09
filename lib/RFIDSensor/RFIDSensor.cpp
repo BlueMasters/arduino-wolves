@@ -20,7 +20,7 @@
 #include <MFRC522.h>
 
 #ifdef DEBUG
-#include "Streaming.h"
+#include <Streaming.h>
 #endif
 
 void RFIDSensor::begin() {
@@ -29,53 +29,53 @@ void RFIDSensor::begin() {
 
 bool RFIDSensor::selfTest(){
   #ifdef DEBUG
-  _mfrc522.PCD_DumpVersionToSerial();
+    _mfrc522.PCD_DumpVersionToSerial();
   #endif
-  bool result = _mfrc522.PCD_PerformSelfTest();
-  begin(); // init once again, which is required after a self-test
-  return result;
+    bool result = _mfrc522.PCD_PerformSelfTest();
+    begin(); // init once again, which is required after a self-test
+    return result;
 }
 
 void RFIDSensor::tick() {
-  // always reinitialise this
-  _changed = false;
+    // always reinitialise this
+    _changed = false;
 
-  if(_mfrc522.PICC_IsNewCardPresent() && _mfrc522.PICC_ReadCardSerial()){
-    // card detected
-    struct rfidUid newCardId;
-    newCardId.set(_mfrc522.uid.size, _mfrc522.uid.uidByte);
+    if(_mfrc522.PICC_IsNewCardPresent() && _mfrc522.PICC_ReadCardSerial()) {
+        // card detected
+        struct rfidUid newCardId;
+        newCardId.set(_mfrc522.uid.size, _mfrc522.uid.uidByte);
 
-    if(newCardId.equals(&_cardId)){
-      // no changes, do nothing.
-      return;
-    }
+        if(newCardId.equals(&_cardId)) {
+            // no changes, do nothing.
+            return;
+        }
 
-    // this is a new card -> update the status
-    _cardId.set(newCardId.size, newCardId.data);
-    _changed = true;
-    validateNewCard();
+        // this is a new card -> update the status
+        _cardId.set(newCardId.size, newCardId.data);
+        _changed = true;
+        validateNewCard();
 
-    // in debug mode, print the detected card
+        // in debug mode, print the detected card
     #ifdef DEBUG
-    Serial << "Card #" << _id << " = ";
-    _cardId.dump();
-    Serial << (_status == VALID_CARD ? " valid" : " invalid") << '\n';
+        Serial << "Card #" << _id << " = ";
+        _cardId.dump();
+        Serial << (_status == VALID_CARD ? " valid" : " invalid") << '\n';
     #endif
-  }
+    }
 }
 
 void RFIDSensor::validateNewCard(){
-  struct rfidUid * cards = app.config.cards.items;
+    struct rfidUid * cards = app.config.cards.items;
 
-  for(int ans = 0; app.config.questions.question[_id].len; ans++){
-    int idx = app.config.questions.question[_id].items[ans];
-    if(_cardId.equals(&cards[idx])){
-      _status = VALID_CARD;
-      return;
+    for(int ans = 0; app.config.questions.question[_id].len; ans++) {
+        int idx = app.config.questions.question[_id].items[ans];
+        if(_cardId.equals(&cards[idx])) {
+            _status = VALID_CARD;
+            return;
+        }
     }
-  }
 
-  _status = INVALID_CARD;
+    _status = INVALID_CARD;
 }
 
 enum rfidSensorStatus RFIDSensor::rfidSensorStatus() {
@@ -83,7 +83,7 @@ enum rfidSensorStatus RFIDSensor::rfidSensorStatus() {
 }
 
 bool RFIDSensor::changed() {
-  return _changed;
+    return _changed;
 }
 
 

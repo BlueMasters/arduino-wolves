@@ -22,51 +22,51 @@
 #define SOLENOID_WAITING_TIME 1000
 
 void Solenoid::begin() {
-  _state = SOLENOID_IDLE;
+    _state = SOLENOID_IDLE;
 }
 
 void Solenoid::fire(long t) {
-  _state = SOLENOID_FIRED;
-  _timestamp = t;
-  digitalWrite(_impulsePin, HIGH);
+    _state = SOLENOID_FIRED;
+    _timestamp = t;
+    digitalWrite(_impulsePin, HIGH);
 }
 
 void Solenoid::tick() {
-  long now = millis();
+    long now = millis();
 
-  switch (_state) {
-  case SOLENOID_IDLE:
-    if (app.emergency) {
-      fire(now);
-      _led.green();
-    } else if (_sensor.rfidSensorStatus() == VALID_CARD) {
-      fire(now);
-      _led.green();
-    } else if (_sensor.rfidSensorStatus() == INVALID_CARD) {
-      fire(now);
-      _led.red();
-    } else {
-      digitalWrite(_impulsePin, LOW);
-      _led.off();
+    switch (_state) {
+    case SOLENOID_IDLE:
+        if (app.emergency) {
+            fire(now);
+            _led.green();
+        } else if (_sensor.rfidSensorStatus() == VALID_CARD) {
+            fire(now);
+            _led.green();
+        } else if (_sensor.rfidSensorStatus() == INVALID_CARD) {
+            fire(now);
+            _led.red();
+        } else {
+            digitalWrite(_impulsePin, LOW);
+            _led.off();
+        }
+        break;
+
+    case SOLENOID_FIRED:
+        if (now - _timestamp > app.DI) {
+            _timestamp = now;
+            digitalWrite(_impulsePin, LOW);
+            _led.off();
+            _state = SOLENOID_WAITING;
+        } break;
+
+    case SOLENOID_WAITING:
+        if (now - _timestamp > SOLENOID_WAITING_TIME) {
+            _state = SOLENOID_IDLE;
+        } break;
+
+    default: {
+        _state = SOLENOID_IDLE;
+        break;
     }
-    break;
-
-  case SOLENOID_FIRED:
-    if (now - _timestamp > app.DI) {
-      _timestamp = now;
-      digitalWrite(_impulsePin, LOW);
-      _led.off();
-      _state = SOLENOID_WAITING;
-    } break;
-
-  case SOLENOID_WAITING:
-    if (now - _timestamp > SOLENOID_WAITING_TIME) {
-      _state = SOLENOID_IDLE;
-    } break;
-
-  default: {
-    _state = SOLENOID_IDLE;
-    break;
-  }
-  }
+    }
 };

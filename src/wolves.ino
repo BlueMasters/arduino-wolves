@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Streaming.h>
 #include "App.h"
 #include "LED.h"
 #include "RFIDSensor.h"
@@ -13,9 +14,9 @@ LED leds[N_OF_QUESTIONS] = {
 };
 
 RFIDSensor sensors[N_OF_QUESTIONS] = {
-    RFIDSensor(0, 0),
-    RFIDSensor(0, 0),
-    RFIDSensor(0, 0)
+    RFIDSensor(0, 0, 0),
+    RFIDSensor(1, 0, 0),
+    RFIDSensor(2, 0, 0)
 };
 
 Solenoid solenoids[N_OF_QUESTIONS] = {
