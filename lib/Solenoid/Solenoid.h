@@ -35,6 +35,8 @@ public:
     Solenoid(int impulsePin, RFIDSensor sensor, LED led) :
         _impulsePin(impulsePin), _sensor(sensor), _led(led) {};
     void begin();
+    void on();
+    void off();
     void tick();
 
 private:
