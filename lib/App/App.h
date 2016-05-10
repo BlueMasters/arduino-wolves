@@ -21,7 +21,7 @@ public:
     struct wolvesConfig config;
     uint8_t DI; // TODO use a more descriptive name or comment
     uint8_t DF; // TODO use a more descriptive name or comment
-    RGBLED* statusLed;
+    RGBLED statusLed;
 };
 
 extern App app;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
- 
+
 #ifndef LED__H
 #define LED__H
 
@@ -22,15 +22,17 @@
 class LED {
 
 public:
-    LED(int red, int green) : _red(red), _green(green) {};
+    LED() {};
+    LED(int redPin, int greenPin) : _redPin(redPin), _greenPin(greenPin) {};
     void begin();
+    void begin(int redPin, int greenPin);
     void off();
     void red();
     void green();
 
 private:
-    int _red;
-    int _green;
+    int _redPin;
+    int _greenPin;
 };
 
 
