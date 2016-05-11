@@ -17,6 +17,7 @@
 #include <Arduino.h>
 #include "RFIDSensor.h"
 #include "App.h"
+#include <SPI.h>
 #include <MFRC522.h>
 
 #ifdef DEBUG

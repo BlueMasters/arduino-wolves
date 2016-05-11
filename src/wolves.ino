@@ -7,6 +7,8 @@
 #include "Solenoid.h"
 
 #define N_OF_QUESTIONS 3
+#define HEARTBEAT_COUNTER 10000
+#define HEARTBEAT_WIDTH     100
 
 LED leds[N_OF_QUESTIONS] = {
     LED(23,24),
@@ -56,17 +58,27 @@ void testQuestions() {
 
 void setup() {
     Serial.begin(9600);
+    SPI.begin();
     app.statusLed.begin(2,3,4);
     for (int i = 0; i < N_OF_QUESTIONS; i++) {
         leds[i].begin();
-        //sensors[i].begin();
         solenoids[i].begin();
+        sensors[i].begin();
     }
-    // Testing
     testStatusLed();
     testQuestions();
 }
 
-
-
-void loop() {}
+void loop() {
+    static long heartbeat = 0;
+    for (int i = 0; i < N_OF_QUESTIONS; i++) {
+        solenoids[i].tick();
+    }
+    heartbeat++;
+    if (heartbeat > HEARTBEAT_COUNTER) {
+        app.statusLed.off();
+        heartbeat = 0;
+    } else if (heartbeat > HEARTBEAT_COUNTER - HEARTBEAT_WIDTH){
+        app.statusLed.setColor(COLOR_BLUE);
+    }
+}
