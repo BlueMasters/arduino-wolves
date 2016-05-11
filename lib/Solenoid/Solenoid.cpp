@@ -62,7 +62,7 @@ void Solenoid::tick() {
             _led.red();
             _state = SOLENOID_FROZEN;
         } else { // Idle and no reason to change.
-            digitalWrite(_impulsePin, LOW);
+            off();
             _led.off();
         }
         break;
