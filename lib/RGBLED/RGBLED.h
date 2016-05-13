@@ -28,9 +28,11 @@
 class RGBLED {
 
 public:
+    RGBLED() {};
     RGBLED(int redPin, int greenPin, int bluePin) :
         _redPin(redPin), _greenPin(greenPin), _bluePin(bluePin) {};
     void begin();
+    void begin(int redPin, int greenPin, int bluePin);
     void setColor(uint32_t color);
     void off();
 

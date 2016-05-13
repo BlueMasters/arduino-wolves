@@ -16,20 +16,32 @@
 
 #include <Arduino.h>
 #include "RGBLED.h"
+#ifdef DEBUG
+#include <Stream.h>
+#endif
+
 
 void RGBLED::begin() {
+    setColor(COLOR_BLACK);
     pinMode(_redPin, OUTPUT);
     pinMode(_greenPin, OUTPUT);
     pinMode(_bluePin, OUTPUT);
+}
+
+void RGBLED::begin(int redPin, int greenPin, int bluePin) {
+    _redPin = redPin;
+    _greenPin = greenPin;
+    _bluePin = bluePin;
+    begin();
 }
 
 void RGBLED::setColor(uint32_t color) {
     int r = (color >>  0) & 0xFF;
     int g = (color >>  8) & 0xFF;
     int b = (color >> 16) & 0xFF;
-    analogWrite(_redPin,   r);
-    analogWrite(_greenPin, g);
-    analogWrite(_bluePin,  b);
+    analogWrite(_redPin,   255-r);
+    analogWrite(_greenPin, 255-g);
+    analogWrite(_bluePin,  255-b);
 }
 
 void RGBLED::off() {

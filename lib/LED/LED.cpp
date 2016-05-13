@@ -13,26 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
- 
+
 #include <Arduino.h>
 #include "LED.h"
 
 void LED::begin() {
-    pinMode(_red, OUTPUT);
-    pinMode(_green, OUTPUT);
+    off();
+    pinMode(_redPin, OUTPUT);
+    pinMode(_greenPin, OUTPUT);
+}
+
+void LED::begin(int redPin, int greenPin) {
+    _redPin = redPin;
+    _greenPin = greenPin;
+    begin();
 }
 
 void LED::off() {
-    digitalWrite(_red, LOW);
-    digitalWrite(_green, LOW);
+    digitalWrite(_redPin, HIGH);
+    digitalWrite(_greenPin, HIGH);
 }
 
 void LED::green() {
-    digitalWrite(_red, LOW);
-    digitalWrite(_green, HIGH);
+    digitalWrite(_redPin, HIGH);
+    digitalWrite(_greenPin, LOW);
 }
 
 void LED::red() {
-    digitalWrite(_green, LOW);
-    digitalWrite(_red, HIGH);
+    digitalWrite(_greenPin, HIGH);
+    digitalWrite(_redPin, LOW);
 }

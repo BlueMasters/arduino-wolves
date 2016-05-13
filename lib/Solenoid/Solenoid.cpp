@@ -22,17 +22,27 @@
 #define SOLENOID_WAITING_TIME 1000 // msec
 
 void Solenoid::begin() {
+    off();
+    pinMode(_impulsePin, OUTPUT);
     _state = SOLENOID_IDLE;
+}
+
+void Solenoid::on() {
+    digitalWrite(_impulsePin, LOW);
+}
+
+void Solenoid::off() {
+    digitalWrite(_impulsePin, HIGH);
 }
 
 void Solenoid::fire(long t) {
     _timestamp = t;
-    digitalWrite(_impulsePin, HIGH);
+    on();
 }
 
 void Solenoid::release(long t) {
     _timestamp = t;
-    digitalWrite(_impulsePin, LOW);
+    off();
     _led.off();
 }
 
@@ -52,7 +62,7 @@ void Solenoid::tick() {
             _led.red();
             _state = SOLENOID_FROZEN;
         } else { // Idle and no reason to change.
-            digitalWrite(_impulsePin, LOW);
+            off();
             _led.off();
         }
         break;

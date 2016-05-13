@@ -17,6 +17,7 @@
 #include <Arduino.h>
 #include "RFIDSensor.h"
 #include "App.h"
+#include <SPI.h>
 #include <MFRC522.h>
 
 #ifdef DEBUG
@@ -59,7 +60,7 @@ void RFIDSensor::tick() {
     #ifdef DEBUG
         Serial << "Card #" << _id << " = ";
         _cardId.dump();
-        Serial << (_status == VALID_CARD ? " valid" : " invalid") << '\n';
+        Serial << (_status == VALID_CARD ? " valid" : " invalid") << endl;
     #endif
     }
 }

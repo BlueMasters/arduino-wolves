@@ -19,9 +19,9 @@ public:
     enum configMode configMode;
     bool emergency;
     struct wolvesConfig config;
-    uint8_t DI;
-    uint8_t DF;
-    RGBLED* statusLed;
+    uint8_t DI; // TODO use a more descriptive name or comment
+    uint8_t DF; // TODO use a more descriptive name or comment
+    RGBLED statusLed;
 };
 
 extern App app;

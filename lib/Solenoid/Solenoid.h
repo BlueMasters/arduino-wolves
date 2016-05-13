@@ -23,21 +23,22 @@
 #include "RFIDSensor.h"
 #include "WolvesTypes.h"
 
-enum solenoidState {
-    SOLENOID_IDLE,
-    SOLENOID_FROZEN,
-    SOLENOID_FIRED,
-    SOLENOID_WAITING
-};
-
 class Solenoid : public StateMachine {
 public:
     Solenoid(int impulsePin, RFIDSensor sensor, LED led) :
         _impulsePin(impulsePin), _sensor(sensor), _led(led) {};
     void begin();
+    void on();
+    void off();
     void tick();
 
 private:
+    enum solenoidState {
+        SOLENOID_IDLE,
+        SOLENOID_FROZEN,
+        SOLENOID_FIRED,
+        SOLENOID_WAITING
+    };
     int _impulsePin;
     RFIDSensor _sensor;
     LED _led;
