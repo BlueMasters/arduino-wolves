@@ -92,3 +92,22 @@ void Solenoid::tick() {
     }
     }
 };
+
+int Solenoid::selfCheck0() {
+    _led.red();
+    on();
+    delay(200);
+    return 0;
+}
+
+int Solenoid::selfCheck1() {
+    _led.green();
+    off();
+    delay(200);
+    return 0;
+}
+
+int Solenoid::selfCheck2() {
+    _led.off();
+    return 0;
+}

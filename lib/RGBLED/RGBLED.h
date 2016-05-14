@@ -35,6 +35,7 @@ public:
     void begin(int redPin, int greenPin, int bluePin);
     void setColor(uint32_t color);
     void off();
+    int selfCheck();
 
 private:
     int _redPin;

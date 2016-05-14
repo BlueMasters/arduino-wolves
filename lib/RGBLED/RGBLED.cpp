@@ -47,3 +47,14 @@ void RGBLED::setColor(uint32_t color) {
 void RGBLED::off() {
     setColor(COLOR_BLACK);
 }
+
+int RGBLED::selfCheck() {
+setColor(COLOR_RED);
+delay(1000);
+setColor(COLOR_GREEN);
+delay(1000);
+setColor(COLOR_BLUE);
+delay(1000);
+off();
+return 0;
+}

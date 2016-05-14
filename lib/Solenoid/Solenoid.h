@@ -31,6 +31,9 @@ public:
     void on();
     void off();
     void tick();
+    int selfCheck0();
+    int selfCheck1();
+    int selfCheck2();
 
 private:
     enum solenoidState {
@@ -46,6 +49,8 @@ private:
     long _timestamp;
     void fire(long t);
     void release(long t);
+
+
 };
 
 #endif
