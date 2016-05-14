@@ -8,53 +8,67 @@
 
 #define IR_IDLE_TIMEOUT 6000 // in ms
 
-// TODO: proper keybindings
+// a complete list here:
+// http://www.instructables.com/id/Arduino-Infrared-Remote-tutorial/step6/Record-button-codes/
+
+
 #define IR_KEY_NONE  1
-#define IR_KEY_PLUS  2
-#define IR_KEY_MINUS 3
-#define IR_KEY_POWER 4
-#define IR_KEY_0 5
-#define IR_KEY_1 6
-#define IR_KEY_2 7
-#define IR_KEY_3 8
-#define IR_KEY_4 9
-#define IR_KEY_5 10
-#define IR_KEY_6 11
-#define IR_KEY_7 12
-#define IR_KEY_8 13
-#define IR_KEY_9 14
-#define IR_KEY_PREV 15
-#define IR_KEY_NEXT 16
-#define IR_KEY_CANCEL 17
-#define IR_KEY_OK     18
+#define IR_KEY_POWER 0xFF629D
+// #define IR_KEY_CH    0xFFE21D
+// #define IR_KEY_PREV  0xFF22DD
+// #define IR_KEY_PLAY  0xFFC23D
+// #define IR_KEY_NEXT  0xFF02FD
+#define IR_KEY_MINUS 0xFFE01F
+#define IR_KEY_PLUS  0xFFA857
+
+// #define IR_KEY_EQ  0xFF906F
+// #define IR_KEY_100 0xFF9867
+// #define IR_KEY_200 0xFFB04F
+
+#define IR_KEY_0  0xFF6897
+#define IR_KEY_1  0xFF30CF
+#define IR_KEY_2  0xFF18E7
+#define IR_KEY_3  0xFF7A85
+#define IR_KEY_4  0xFF10EF
+#define IR_KEY_5  0xFF38C7
+#define IR_KEY_6  0xFF5AA5
+#define IR_KEY_7  0xFF42BD
+#define IR_KEY_8  0xFF48B5
+#define IR_KEY_9  0xFF52AD
+
+#define IR_KEY_CANCEL 0xFF22DD // prev
+#define IR_KEY_OK     0xFFC23D // play
+
 
 typedef unsigned long IRKey;
 
 enum IRState {
-    IR_STATE_WAIT_PIN,
-    IR_STATE_WAIT_CMD,
-    IR_STATE_WAIT_CONFIRM,
+        IR_STATE_DEFAULT,
+        IR_STATE_CHOOSE_CMD,
+        IR_STATE_CONFIG,
+        IR_STATE_LEARN
 };
 
 class RemoteControl : public StateMachine {
 public:
-    RemoteControl(int pin) : _irrecv(pin), _state(IR_STATE_WAIT_PIN) {};
-    void begin();
-    virtual void tick();
-    IRKey keypressed();
+        RemoteControl(int pin) : _irrecv(pin), _state(IR_STATE_DEFAULT) {
+        };
+        void begin();
+        virtual void tick();
+        IRKey keypressed();
 
 private:
-    void handlePinCode();
-    void handleCmd();
-    void handleConfirm();
-    int lastKeyToInt();
-    void resetState();
+        void handlePinCode();
+        void handleCmd();
+        void handleConfirm();
+        int lastKeyToInt();
+        void resetState();
 
-    IRrecv _irrecv;
-    long _lastrecvtime;
-    IRKey _lastkey;
-    IRState _state;
-    int _pincode_idx;
+        IRrecv _irrecv;
+        long _lastrecvtime;
+        IRKey _lastkey;
+        IRState _state;
+        int _pincode_idx;
 };
 
 #endif
