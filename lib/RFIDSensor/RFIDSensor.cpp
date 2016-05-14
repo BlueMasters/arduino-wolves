@@ -28,7 +28,7 @@ void RFIDSensor::begin() {
     _mfrc522.PCD_Init();
 }
 
-bool RFIDSensor::selfTest(){
+bool RFIDSensor::selfCheck(){
   #ifdef DEBUG
     _mfrc522.PCD_DumpVersionToSerial();
   #endif
