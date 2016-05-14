@@ -17,7 +17,7 @@ public:
     struct rfidUid cardId();
     enum rfidSensorStatus rfidSensorStatus();
     void begin();
-    bool selfTest();
+    bool selfCheck();
     int id(){
         return _id;
     };
