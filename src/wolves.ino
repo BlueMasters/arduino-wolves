@@ -16,12 +16,14 @@
 
 #include <Arduino.h>
 #include <Streaming.h>
+#include <EEPROM.h>
 #include "App.h"
 #include "LED.h"
 #include "RGBLED.h"
 #include "RFIDSensor.h"
 #include "Solenoid.h"
 #include "RemoteControl.h"
+
 
 #define VERSION "0.0.1"
 

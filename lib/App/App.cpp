@@ -1,6 +1,6 @@
 #include <Streaming.h>
 #include <Arduino.h>
-// #include <EEPROM.h>
+#include <EEPROM.h>
 #include "App.h"
 
 #define SERIAL_INIT_TIMEOUT 1500
