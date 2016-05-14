@@ -16,6 +16,7 @@
 
 #include <Arduino.h>
 #include <IRremote.h>
+#include <Streaming.h>
 
 #include "RemoteControl.h"
 #include "App.h"
@@ -69,9 +70,15 @@ void RemoteControl::tick(){
     decode_results recv_key;
 
     if (_irrecv.decode(&recv_key)) {
-        _lastkey = recv_key.value;
         _lastrecvtime = now;
         _irrecv.resume(); // Receive the next value
+        if(recv_key.value == 0xFFFFFFFF) // -1 = key still pressed
+            return;
+
+        _lastkey = recv_key.value;
+        #ifdef APP_DEBUG
+        Serial << "IR Received : " << _HEX(recv_key.value) << "(" << _lastkey << ")" << endl;
+        #endif
 
     } else {
         // no key received, nothing to do
@@ -113,8 +120,11 @@ void RemoteControl::resetState(){
 void RemoteControl::handlePinCode(){
 
     int key_nbr = lastKeyToInt();
+    #ifdef APP_DEBUG
+    Serial << "Key Number : " << key_nbr << endl;
+    #endif
     if(key_nbr < 0) return; // ignore non number key (TODO)
-    int expected = app.pinCode[key_nbr];
+    int expected = app.pinCode[_pincode_idx];
 
     if(key_nbr == expected) {
         _pincode_idx++;
