@@ -20,7 +20,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#ifdef DEBUG
+#ifdef APP_DEBUG
 #include <Streaming.h>
 #endif
 
@@ -29,7 +29,7 @@ void RFIDSensor::begin() {
 }
 
 bool RFIDSensor::selfCheck(){
-  #ifdef DEBUG
+  #ifdef APP_DEBUG
     _mfrc522.PCD_DumpVersionToSerial();
   #endif
     bool result = _mfrc522.PCD_PerformSelfTest();
@@ -56,8 +56,8 @@ void RFIDSensor::tick() {
         _changed = true;
         validateNewCard();
 
-        // in debug mode, print the detected card
-    #ifdef DEBUG
+        // in APP_DEBUG mode, print the detected card
+    #ifdef APP_DEBUG
         Serial << "Card #" << _id << " = ";
         _cardId.dump();
         Serial << (_status == VALID_CARD ? " valid" : " invalid") << endl;

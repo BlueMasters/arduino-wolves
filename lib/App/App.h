@@ -5,7 +5,8 @@
 #include "WolvesTypes.h"
 #include "RGBLED.h"
 
-#define DEBUG true
+#define APP_DEBUG
+
 #define DI_GRANULARITY 100 // 1 unit means +100 ms
 #define DF_GRANULARITY 25  // 1 unit means 25 ms
 

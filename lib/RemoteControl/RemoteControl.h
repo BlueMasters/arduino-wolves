@@ -63,7 +63,7 @@ private:
         void handleConfirm();
         int lastKeyToInt();
         void resetState();
-
+        void setState(enum IRState newState);
         IRrecv _irrecv;
         long _lastrecvtime;
         IRKey _lastkey;
