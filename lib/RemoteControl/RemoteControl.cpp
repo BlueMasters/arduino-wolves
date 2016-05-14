@@ -32,19 +32,21 @@ void RemoteControl::begin(){
 
 void RemoteControl::tick(){
 
-long now = millis();
+    long now = millis();
+
+    app.emergency = false; // always reset the flag
 
     // handle the confirm mode with one tick behind,
     // so the app state is not reset before the
     // other modules have a chance to handle the
     // confirm/cancel event
-    if(_state == IR_STATE_CONFIG || _state == IR_STATE_LEARN){
-       if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL) {
-           // back to wait cmd state (if timeout, will be handled below)
-           resetState();
-           setState(IR_STATE_CHOOSE_CMD);
-       }
-   }
+    if(_state == IR_STATE_CONFIG || _state == IR_STATE_LEARN) {
+        if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL) {
+            // back to wait cmd state (if timeout, will be handled below)
+            resetState();
+            setState(IR_STATE_CHOOSE_CMD);
+        }
+    }
 
     // reset key state
     _lastkey = IR_KEY_NONE;
@@ -74,11 +76,15 @@ long now = millis();
         _irrecv.resume(); // Receive the next value
         if(recv_key.value == 0xFFFFFFFF) // -1 = key still pressed
             return;
-
         _lastkey = recv_key.value;
         #ifdef APP_DEBUG
         Serial << "IR Received : " << _HEX(recv_key.value) << "(" << _lastkey << ")" << endl;
         #endif
+
+        if(_lastkey == IR_KEY_POWER) {
+            app.emergency = true;
+            return;
+        }
 
     } else {
         // no key received, nothing to do
@@ -87,9 +93,9 @@ long now = millis();
 
     // handle cmd
     switch(_state) {
-        case IR_STATE_DEFAULT: handlePinCode(); break;
-        case IR_STATE_CHOOSE_CMD: handleCmd(); break;
-        default: break;
+    case IR_STATE_DEFAULT: handlePinCode(); break;
+    case IR_STATE_CHOOSE_CMD: handleCmd(); break;
+    default: break;
     }
 
 } // end tick
@@ -161,22 +167,22 @@ void RemoteControl::handleCmd(){
 }
 
 void RemoteControl::setState(enum IRState newState){
-  _state = newState;
-  
-  switch (newState) {
+    _state = newState;
+
+    switch (newState) {
     case IR_STATE_DEFAULT:
-      app.statusLed.off();
-      break;
+        app.statusLed.off();
+        break;
     case IR_STATE_CHOOSE_CMD:
-      app.statusLed.setColor(IR_LED_CHOOSE_CMD);
-      break;
+        app.statusLed.setColor(IR_LED_CHOOSE_CMD);
+        break;
     case IR_STATE_LEARN:
-      app.statusLed.setColor(IR_LED_LEARN);
-      break;
+        app.statusLed.setColor(IR_LED_LEARN);
+        break;
     case IR_STATE_CONFIG:
-      app.statusLed.setColor(app.configMode == confmode_DF ? IR_LED_CONFIG_DF : IR_LED_CONFIG_DI);
-      break;
-  }
+        app.statusLed.setColor(app.configMode == confmode_DF ? IR_LED_CONFIG_DF : IR_LED_CONFIG_DI);
+        break;
+    }
 }
 
 

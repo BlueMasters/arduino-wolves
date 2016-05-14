@@ -22,13 +22,13 @@ public:
     enum configMode configMode;
     bool emergency;
     struct wolvesConfig config;
-    uint8_t DI; // Duration of Impuls
-    uint8_t DF; // Duration of Feedback
+    uint16_t DI; // Duration of Impuls (in ms)
+    uint16_t DF; // Duration of Feedback (in ms)
     RGBLED statusLed;
 
-    void loadApp(); // Load pinCode, config, DI and DF. 
-    void saveDI(uint8_t DI);
-    void saveDF(uint8_t DF);
+    void loadApp(); // Load pinCode, config, DI and DF. // TODO Take granularity into account.
+    void saveDI(uint16_t DI);
+    void saveDF(uint16_t DF);
     void saveConfig(struct wolvesConfig& config);
 
 };

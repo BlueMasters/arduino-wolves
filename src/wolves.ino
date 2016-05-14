@@ -97,6 +97,8 @@ void setup() {
     for (int i = 0; i < 4; i++) {
         app.pinCode[i] = i+1;
     }
+    app.DF = 2500;
+    app.DI = 1000;
 }
 
 void loop() {
