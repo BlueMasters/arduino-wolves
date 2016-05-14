@@ -27,12 +27,18 @@ void RemoteControl::begin(){
 void RemoteControl::tick(){
 
     long now = millis();
-    // handle the confirm mode with tick behind,
+
+    // handle the confirm mode with one tick behind,
     // so the app state is not reset before the
     // other modules have a chance to handle the
     // confirm/cancel event
-
-    if(_state == IR_STATE_WAIT_CONFIRM) handleConfirm();
+    if(_state == IR_STATE_CONFIG || _state == IR_STATE_LEARN){
+       if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL) {
+           // back to wait cmd state (if timeout, will be handled below)
+           resetState();
+           _state = IR_STATE_CHOOSE_CMD;
+       }
+   }
 
     // reset key state
     _lastkey = IR_KEY_NONE;
@@ -40,14 +46,16 @@ void RemoteControl::tick(){
     // handle timeout (only in normal mode)
     if(app.globalMode == globmode_NORMAL &&
        now - _lastrecvtime >= IR_IDLE_TIMEOUT) {
-        if(_state == IR_STATE_WAIT_CONFIRM) {
+        if(_state == IR_STATE_CONFIG) {
             // if executing command, send the cancel key
             // during one tick before continuing
             _lastkey = IR_KEY_CANCEL;
-            resetState();
-            return; //
+            return; // ensure the cancel key stays for one tick
+            // next tick, handleConfirm will be called and the
+            // state will be reset
         } else {
             // else, simply reset the state
+            // and read next key
             resetState();
         }
     }
@@ -67,9 +75,9 @@ void RemoteControl::tick(){
 
     // handle cmd
     switch(_state) {
-    case IR_STATE_WAIT_PIN: handlePinCode(); break;
-    case IR_STATE_WAIT_CMD: handleCmd(); break;
-    default: break;
+        case IR_STATE_DEFAULT: handlePinCode(); break;
+        case IR_STATE_CHOOSE_CMD: handleCmd(); break;
+        default: break;
     }
 
 } // end tick
@@ -90,6 +98,13 @@ int RemoteControl::lastKeyToInt(){
     }
 }
 
+void RemoteControl::resetState(){
+    app.globalMode = globmode_NORMAL;
+    app.configMode = confmode_None;
+    _state = IR_STATE_DEFAULT;
+    _pincode_idx = 0;
+}
+
 void RemoteControl::handlePinCode(){
 
     int key_nbr = lastKeyToInt();
@@ -100,7 +115,7 @@ void RemoteControl::handlePinCode(){
         _pincode_idx++;
         if(_pincode_idx >= 4) {
             // the whole code has been entered.
-            _state = IR_STATE_WAIT_CMD;
+            _state = IR_STATE_CHOOSE_CMD;
             _pincode_idx = 0;
         }
     } else {
@@ -108,30 +123,25 @@ void RemoteControl::handlePinCode(){
     }
 }
 
-void RemoteControl::resetState(){
-    app.globalMode = globmode_NORMAL;
-    app.configMode = confmode_None;
-    _state = IR_STATE_WAIT_PIN;
-    _pincode_idx = 0;
-}
-
 void RemoteControl::handleCmd(){
     // next state
-    _state = IR_STATE_WAIT_CONFIRM;
     switch(_lastkey) {
-    case IR_KEY_1:  app.globalMode = globmode_LEARN; break;
-    case IR_KEY_2:  app.configMode = confmode_DI; break;
-    case IR_KEY_3:  app.configMode = confmode_DF; break;
-    default: // no command match, back to wait cmd
-        _state = IR_STATE_WAIT_CMD;
-    }
-}
 
-void RemoteControl::handleConfirm(){
-    if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL) {
-        // if confirmation or cancel received, back to wait cmd state
-        resetState();
-        _state = IR_STATE_WAIT_CMD;
+    case IR_KEY_1:  // learn
+        app.globalMode = globmode_LEARN;
+        _state = IR_STATE_LEARN;
+        return;
+
+    case IR_KEY_2: // edit Delay of Feedback
+        app.configMode = confmode_DF;
+        _state = IR_STATE_CONFIG;
+        return;
+
+    case IR_KEY_3: // edit Delay of Impulsion
+        app.configMode = confmode_DI;
+        _state = IR_STATE_CONFIG;
+        return;
+
     }
 }
 
