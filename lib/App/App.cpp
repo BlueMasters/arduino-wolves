@@ -8,7 +8,7 @@
 
 App app;
 
-void App::readConfig() {
+void App::loadConfig() {
     Serial << "Press ENTER now if you want to reset the PIN code." << endl;
     Serial.setTimeout(SERIAL_INIT_TIMEOUT);
     if (Serial.read() == '\r') {

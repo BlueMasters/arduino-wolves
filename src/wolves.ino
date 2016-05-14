@@ -97,7 +97,6 @@ void setup() {
     for (int i = 0; i < 4; i++) {
         app.pinCode[i] = i+1;
     }
-
 }
 
 void loop() {

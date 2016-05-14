@@ -32,7 +32,7 @@ void RemoteControl::begin(){
 
 void RemoteControl::tick(){
 
-    long now = millis();
+long now = millis();
 
     // handle the confirm mode with one tick behind,
     // so the app state is not reset before the
