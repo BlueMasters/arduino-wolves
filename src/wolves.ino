@@ -21,6 +21,7 @@
 #include "RGBLED.h"
 #include "RFIDSensor.h"
 #include "Solenoid.h"
+#include "RemoteControl.h"
 
 #define VERSION "0.0.1"
 
@@ -46,6 +47,8 @@ Solenoid solenoids[N_OF_QUESTIONS] = {
     Solenoid(45, sensors[2], leds[2]),
 };
 
+RemoteControl remoteCtrl(11);
+
 void checkSolenoids() {
     for (int i = 0; i < N_OF_QUESTIONS; i++)
         solenoids[i].selfCheck0();
@@ -60,7 +63,11 @@ void checkSolenoids() {
 void checkRFIDSensors() {
     int countOk = 0;
     for (int i = 0; i < N_OF_QUESTIONS; i++) {
-        if (sensors[i].selfCheck()) countOk++;
+        bool ok = sensors[i].selfCheck();
+        if (ok) countOk++;
+        #ifdef APP_DEBUG
+        Serial << "Checking Sensor " << i << ": " << (ok ? "OK" : "FAILED") << endl;
+        #endif
     }
     if (countOk != N_OF_QUESTIONS) {
         while(1) {
@@ -78,26 +85,35 @@ void setup() {
     Serial << "Copyright (c) 2016 BlueMasters Fribourg" << endl;
     SPI.begin();
     app.statusLed.begin(2,3,4);
+    remoteCtrl.begin();
     for (int i = 0; i < N_OF_QUESTIONS; i++) {
         leds[i].begin();
         solenoids[i].begin();
         sensors[i].begin();
     }
-    app.statusLed.selfCheck();
-    checkSolenoids();
+    // app.statusLed.selfCheck();
+    // checkSolenoids();
     checkRFIDSensors();
+    for (int i = 0; i < 4; i++) {
+        app.pinCode[i] = i+1;
+    }
+
 }
 
 void loop() {
     static long heartbeat = 0;
+    remoteCtrl.tick();
+    for (int i = 0; i < N_OF_QUESTIONS; i++) {
+        sensors[i].tick();
+    }
     for (int i = 0; i < N_OF_QUESTIONS; i++) {
         solenoids[i].tick();
     }
-    heartbeat++;
-    if (heartbeat > HEARTBEAT_COUNTER) {
-        app.statusLed.off();
-        heartbeat = 0;
-    } else if (heartbeat > HEARTBEAT_COUNTER - HEARTBEAT_WIDTH){
-        app.statusLed.setColor(COLOR_BLUE);
-    }
+    // heartbeat++;
+    // if (heartbeat > HEARTBEAT_COUNTER) {
+    //     app.statusLed.off();
+    //     heartbeat = 0;
+    // } else if (heartbeat > HEARTBEAT_COUNTER - HEARTBEAT_WIDTH){
+    //     app.statusLed.setColor(COLOR_BLUE);
+    // }
 }
