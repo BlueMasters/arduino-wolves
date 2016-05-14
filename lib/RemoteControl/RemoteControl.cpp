@@ -42,7 +42,7 @@ long now = millis();
        if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL) {
            // back to wait cmd state (if timeout, will be handled below)
            resetState();
-           _state = IR_STATE_CHOOSE_CMD;
+           setState(IR_STATE_CHOOSE_CMD);
        }
    }
 
@@ -113,7 +113,7 @@ int RemoteControl::lastKeyToInt(){
 void RemoteControl::resetState(){
     app.globalMode = globmode_NORMAL;
     app.configMode = confmode_None;
-    _state = IR_STATE_DEFAULT;
+    setState(IR_STATE_DEFAULT);
     _pincode_idx = 0;
 }
 
@@ -130,7 +130,7 @@ void RemoteControl::handlePinCode(){
         _pincode_idx++;
         if(_pincode_idx >= 4) {
             // the whole code has been entered.
-            _state = IR_STATE_CHOOSE_CMD;
+            setState(IR_STATE_CHOOSE_CMD);
             _pincode_idx = 0;
         }
     } else {
@@ -144,17 +144,17 @@ void RemoteControl::handleCmd(){
 
     case IR_KEY_1:  // learn
         app.globalMode = globmode_LEARN;
-        _state = IR_STATE_LEARN;
+        setState(IR_STATE_LEARN);
         return;
 
     case IR_KEY_2: // edit Delay of Feedback
         app.configMode = confmode_DF;
-        _state = IR_STATE_CONFIG;
+        setState(IR_STATE_CONFIG);
         return;
 
     case IR_KEY_3: // edit Delay of Impulsion
         app.configMode = confmode_DI;
-        _state = IR_STATE_CONFIG;
+        setState(IR_STATE_CONFIG);
         return;
 
     }
@@ -162,6 +162,7 @@ void RemoteControl::handleCmd(){
 
 void RemoteControl::setState(enum IRState newState){
   _state = newState;
+  
   switch (newState) {
     case IR_STATE_DEFAULT:
       app.statusLed.off();
