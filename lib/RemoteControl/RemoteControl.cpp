@@ -20,6 +20,11 @@
 #include "RemoteControl.h"
 #include "App.h"
 
+#define IR_LED_CHOOSE_CMD 0xFF7400 // orange
+#define IR_LED_CONFIG_DF  0xAE56DF // light violet
+#define IR_LED_CONFIG_DI  0x400362 // dark violet
+#define IR_LED_LEARN      0x3029D6 // bright blue
+
 void RemoteControl::begin(){
     _irrecv.enableIRIn(); // Start the receiver
 }
@@ -144,6 +149,25 @@ void RemoteControl::handleCmd(){
 
     }
 }
+
+void RemoteControl::setState(enum IRState newState){
+  _state = newState;
+  switch (newState) {
+    case IR_STATE_DEFAULT:
+      app.statusLed.off();
+      break;
+    case IR_STATE_CHOOSE_CMD:
+      app.statusLed.setColor(IR_LED_CHOOSE_CMD);
+      break;
+    case IR_STATE_LEARN:
+      app.statusLed.setColor(IR_LED_LEARN);
+      break;
+    case IR_STATE_CONFIG:
+      app.statusLed.setColor(app.configMode == confmode_DF ? IR_LED_CONFIG_DF : IR_LED_CONFIG_DI);
+      break;
+  }
+}
+
 
 IRKey RemoteControl::keypressed(){
     return _lastkey;
