@@ -16,7 +16,7 @@ enum configMode {confmode_DI, confmode_DF, confmode_None};
 
 class App {
 public:
-    uint8_t pinCode[4+1];
+    uint8_t pinCode[4];
     enum globalMode globalMode;
     enum configMode configMode;
     bool emergency;
