@@ -46,7 +46,7 @@ Solenoid solenoids[N_OF_QUESTIONS] = {
     Solenoid(45, sensors[2], leds[2]),
 };
 
-void testQuestions() {
+void checkSolenoids() {
     for (int i = 0; i < N_OF_QUESTIONS; i++)
         solenoids[i].selfCheck0();
     delay(1000);
@@ -55,6 +55,21 @@ void testQuestions() {
     delay(1000);
     for (int i = 0; i < N_OF_QUESTIONS; i++)
         solenoids[i].selfCheck2();
+}
+
+void checkRFIDSensors() {
+    int countOk = 0;
+    for (int i = 0; i < N_OF_QUESTIONS; i++) {
+        if (sensors[i].selfCheck()) countOk++;
+    }
+    if (countOk != N_OF_QUESTIONS) {
+        while(1) {
+            app.statusLed.setColor(COLOR_RED);
+            delay(100);
+            app.statusLed.off();
+            delay(100);
+        }
+    }
 }
 
 void setup() {
@@ -69,7 +84,8 @@ void setup() {
         sensors[i].begin();
     }
     app.statusLed.selfCheck();
-    testQuestions();
+    checkSolenoids();
+    checkRFIDSensors();
 }
 
 void loop() {
