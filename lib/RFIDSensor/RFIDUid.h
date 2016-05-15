@@ -1,10 +1,7 @@
-#ifndef WOLVES_TYPES__H
-#define WOLVES_TYPES__H
+#ifndef RFIDUID__H
+#define RFIDUID__H
 
 #include <Arduino.h>
-#define WOLVES_MAX_CARDS 32
-#define WOLVES_MAX_QUESTIONS 3
-#define WOLVES_MAX_GOOD_ANSWERS 32
 
 struct rfidUid {
     byte size;
@@ -28,20 +25,6 @@ struct rfidUid {
     void dump(){
         // TODO
     }
-};
-
-struct wolvesConfig {
-    struct {
-        int len;
-        struct rfidUid items[WOLVES_MAX_CARDS];
-    } cards;
-    struct {
-        int len;
-        struct {
-            int len;
-            int items[WOLVES_MAX_GOOD_ANSWERS];
-        } question[WOLVES_MAX_QUESTIONS];
-    } questions;
 };
 
 #endif

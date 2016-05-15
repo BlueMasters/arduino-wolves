@@ -21,7 +21,6 @@
 #include "StateMachine.h"
 #include "LED.h"
 #include "RFIDSensor.h"
-#include "WolvesTypes.h"
 
 class Solenoid : public StateMachine {
 public:

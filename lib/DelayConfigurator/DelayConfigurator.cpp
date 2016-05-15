@@ -5,7 +5,7 @@
 
 void DelayConfigurator::tick(){
     if(_enabled) {
-        IRKey key = _remote->keypressed();
+        IRKey key = _remote.keypressed();
 
    switch(key){
      case IR_KEY_CANCEL:
@@ -33,10 +33,10 @@ void DelayConfigurator::tick(){
 void DelayConfigurator::save(){
     // write to eeprom TODO
     // update RAM
-    *_target = _tempvalue;
+    _target = _tempvalue;
 }
 
 void DelayConfigurator::enable(){
     _enabled = true;
-    _tempvalue = *_target;
+    _tempvalue = _target;
 }

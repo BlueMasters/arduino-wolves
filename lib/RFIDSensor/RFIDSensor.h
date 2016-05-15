@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "StateMachine.h"
-#include "WolvesTypes.h"
+#include "RFIDUid.h"
 #include <MFRC522.h>
 
 enum rfidSensorStatus { NO_CARD, INVALID_CARD, VALID_CARD };

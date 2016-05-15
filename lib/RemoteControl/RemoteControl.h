@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <IRremote.h>
 #include "StateMachine.h"
-#include "WolvesTypes.h"
+#include "App.h"
 
 #define IR_IDLE_TIMEOUT 6000 // in ms
 
@@ -60,7 +60,6 @@ public:
 private:
         void handlePinCode();
         void handleCmd();
-        void handleConfirm();
         int lastKeyToInt();
         void resetState();
         void setState(enum IRState newState);

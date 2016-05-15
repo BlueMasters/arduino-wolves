@@ -8,8 +8,8 @@
 
 class DelayConfigurator : public StateMachine {
 public:
-    DelayConfigurator(uint8_t * delayToConfigure, enum configMode myMode,
-                      RemoteControl * remote, uint8_t min, uint8_t max, uint8_t increment)
+    DelayConfigurator(uint8_t &delayToConfigure, enum configMode myMode,
+                      RemoteControl &remote, uint8_t min, uint8_t max, uint8_t increment)
         : _target(delayToConfigure), _myMode(myMode), _remote(remote),
         _min(min + increment), _max(max - increment), _increment(increment) {}
     virtual void tick();
@@ -18,9 +18,9 @@ private:
     void save();
     void enable();
 
-    uint8_t * _target;
+    uint8_t & _target;
     enum configMode _myMode;
-    RemoteControl * _remote;
+    RemoteControl &_remote;
     uint8_t _min;
     uint8_t _max;
     uint8_t _increment;
