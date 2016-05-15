@@ -10,6 +10,7 @@ enum rfidSensorStatus { NO_CARD, INVALID_CARD, VALID_CARD };
 
 class RFIDSensor : public StateMachine {
 public:
+    RFIDSensor(int id) : _id(id) {};
     RFIDSensor(int id, int csPin, int resetPin) :
         _id(id), _status(NO_CARD), _changed(false), _mfrc522(csPin, resetPin) {};
 
@@ -17,6 +18,7 @@ public:
     struct rfidUid cardId();
     enum rfidSensorStatus rfidSensorStatus();
     void begin();
+    void begin(int csPin, int resetPin);
     bool selfCheck();
     int id(){
         return _id;
