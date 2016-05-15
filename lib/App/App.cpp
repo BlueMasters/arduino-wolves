@@ -66,7 +66,37 @@ void App::loadApp() {
 }
 
 void App::saveConfig(struct wolvesConfig &config){
+    EEPROM.write(EEPROM_ADDR_MUTEX, 1);
 
+    // write chips
+    int offset = EEPROM_ADDR_NB_CHIPS;
+
+    struct wolvesConfigCards &cards = config.cards;
+    EEPROM.put(offset++,cards.len);
+
+    for(int c = 0; c < cards.len; c++){
+        // read one rfuid address (size + data[size])
+        struct rfidUid &card = cards.items[c];
+        EEPROM.put(offset++, card.size);
+        for(int i = 0; i < card.size; i++ ){
+            EEPROM.put(offset++, card.data[i]);
+        }
+    }
+
+    // write Q&A
+    struct wolvesConfigQuestions &questions = config.questions;
+    for(int q = 0; q < questions.len; q++){
+        struct wolvesConfigQuestion &question = questions.question[q];
+        EEPROM.put(offset++, question.len); // nb questions
+        for(int i = 0; i < question.len; i++ ){
+            EEPROM.put(offset++, question.items[i]);
+        }
+    }
+
+    EEPROM.write(EEPROM_ADDR_MUTEX, 0);
+
+    // reload config
+    loadApp();
 }
 
 
