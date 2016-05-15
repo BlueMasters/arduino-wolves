@@ -27,7 +27,6 @@
 
 #define VERSION "0.0.1"
 
-#define N_OF_QUESTIONS 3
 #define HEARTBEAT_COUNTER 10000
 #define HEARTBEAT_WIDTH     100
 
