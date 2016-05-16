@@ -27,23 +27,22 @@
 
 #define VERSION "0.0.1"
 
-#define N_OF_QUESTIONS 3
 #define HEARTBEAT_COUNTER 10000
 #define HEARTBEAT_WIDTH     100
 
-LED leds[N_OF_QUESTIONS] = {
+LED leds[NB_OF_QUESTIONS] = {
     LED(23,24),
     LED(33,34),
     LED(43,44)
 };
 
-RFIDSensor sensors[N_OF_QUESTIONS] = {
+RFIDSensor sensors[NB_OF_QUESTIONS] = {
     RFIDSensor(0, 22, 53),
     RFIDSensor(1, 32, 53),
     RFIDSensor(2, 42, 53)
 };
 
-Solenoid solenoids[N_OF_QUESTIONS] = {
+Solenoid solenoids[NB_OF_QUESTIONS] = {
     Solenoid(25, sensors[0], leds[0]),
     Solenoid(35, sensors[1], leds[1]),
     Solenoid(45, sensors[2], leds[2]),
@@ -52,26 +51,35 @@ Solenoid solenoids[N_OF_QUESTIONS] = {
 RemoteControl remoteCtrl(11);
 
 void checkSolenoids() {
-    for (int i = 0; i < N_OF_QUESTIONS; i++)
+    for (int i = 0; i < NB_OF_QUESTIONS; i++)
         solenoids[i].selfCheck0();
     delay(1000);
-    for (int i = 0; i < N_OF_QUESTIONS; i++)
+    for (int i = 0; i < NB_OF_QUESTIONS; i++)
         solenoids[i].selfCheck1();
     delay(1000);
-    for (int i = 0; i < N_OF_QUESTIONS; i++)
+    for (int i = 0; i < NB_OF_QUESTIONS; i++)
         solenoids[i].selfCheck2();
 }
 
 void checkRFIDSensors() {
     int countOk = 0;
-    for (int i = 0; i < N_OF_QUESTIONS; i++) {
+    bool sensorOK[NB_OF_QUESTIONS];
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         bool ok = sensors[i].selfCheck();
+        sensorOK[i] = ok;
         if (ok) countOk++;
         #ifdef APP_DEBUG
         Serial << "Checking Sensor " << i << ": " << (ok ? "OK" : "FAILED") << endl;
         #endif
     }
-    if (countOk != N_OF_QUESTIONS) {
+    if (countOk != NB_OF_QUESTIONS) {
+        for (int i = 0; i < NB_OF_QUESTIONS; i++) {
+            if (sensorOK[i]) {
+                leds[i].green();
+            } else {
+                leds[i].red();
+            }
+        }
         while(1) {
             app.statusLed.setColor(COLOR_RED);
             delay(100);
@@ -88,7 +96,7 @@ void setup() {
     SPI.begin();
     app.statusLed.begin(2,3,4);
     remoteCtrl.begin();
-    for (int i = 0; i < N_OF_QUESTIONS; i++) {
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         leds[i].begin();
         solenoids[i].begin();
         sensors[i].begin();
@@ -106,10 +114,10 @@ void setup() {
 void loop() {
     static long heartbeat = 0;
     remoteCtrl.tick();
-    for (int i = 0; i < N_OF_QUESTIONS; i++) {
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         sensors[i].tick();
     }
-    for (int i = 0; i < N_OF_QUESTIONS; i++) {
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         solenoids[i].tick();
     }
     // heartbeat++;

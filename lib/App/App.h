@@ -13,21 +13,21 @@
 
 // --------------------------------
 
-#define WOLVES_MAX_CARDS 32
-#define WOLVES_MAX_QUESTIONS 3
-#define WOLVES_MAX_GOOD_ANSWERS 32
+#define NB_OF_QUESTIONS 3
+#define MAX_CARDS 32
+#define MAX_GOOD_ANSWERS 32
 
 struct wolvesConfig {
     struct {
         int len;
-        struct rfidUid items[WOLVES_MAX_CARDS];
+        struct rfidUid items[MAX_CARDS];
     } cards;
     struct {
         int len;
         struct {
             int len;
-            int items[WOLVES_MAX_GOOD_ANSWERS];
-        } question[WOLVES_MAX_QUESTIONS];
+            int items[MAX_GOOD_ANSWERS];
+        } question[NB_OF_QUESTIONS];
     } questions;
 };
 
