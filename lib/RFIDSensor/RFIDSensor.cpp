@@ -28,6 +28,10 @@ void RFIDSensor::begin() {
     _mfrc522.PCD_Init();
 }
 
+void RFIDSensor::begin(int csPin, int resetPin) {
+    _mfrc522.PCD_Init(csPin, resetPin);
+}
+
 bool RFIDSensor::selfCheck(){
   #ifdef APP_DEBUG
     _mfrc522.PCD_DumpVersionToSerial();

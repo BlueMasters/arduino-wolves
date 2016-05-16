@@ -17,6 +17,8 @@ public:
 private:
     void save();
     void enable();
+    void increment();
+    void decrement();
 
     uint8_t & _target;
     enum configMode _myMode;

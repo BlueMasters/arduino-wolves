@@ -9,29 +9,32 @@
 
 #define DI_GRANULARITY 100 // 1 unit means +100 ms
 #define DF_GRANULARITY 25  // 1 unit means 25 ms
-#define MAGIC "B1M"
-
-// --------------------------------
+#define MAGIC 0x31424d //"B1M"
 
 #define NB_OF_QUESTIONS 3
 #define MAX_CARDS 32
 #define MAX_GOOD_ANSWERS 32
 
-struct wolvesConfig {
-    struct {
-        int len;
-        struct rfidUid items[MAX_CARDS];
-    } cards;
-    struct {
-        int len;
-        struct {
-            int len;
-            int items[MAX_GOOD_ANSWERS];
-        } question[NB_OF_QUESTIONS];
-    } questions;
+
+struct wolvesConfigCards {
+    byte len;
+    struct rfidUid items[MAX_CARDS];
 };
 
-// --------------------------------
+struct wolvesConfigQuestion {
+    byte len;
+    byte items[MAX_GOOD_ANSWERS];
+};
+
+struct wolvesConfigQuestions {
+    byte len;
+    struct wolvesConfigQuestion question[NB_OF_QUESTIONS];
+};
+
+struct wolvesConfig {
+    struct wolvesConfigCards cards;
+    struct wolvesConfigQuestions questions;
+};
 
 enum globalMode {globmode_NORMAL, globmode_LEARN };
 enum configMode {confmode_DI, confmode_DF, confmode_None};
