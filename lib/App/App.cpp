@@ -71,7 +71,7 @@ void App::loadApp() {
     // read Q&A
     struct wolvesConfigQuestions &questions = app.config.questions;
 
-    // nbr of questions
+    // nbr of questions TODO (fixed... but interesting to have it in rom)
     EEPROM.get(offset, questions.len);
     offset += sizeof(questions.len);
 
@@ -168,7 +168,7 @@ void App::saveConfig(struct wolvesConfig &config){
     loadApp();
 }
 
-
+// TODO: keep those methods anyway ?
 void App::saveDF(uint16_t DF){
         EEPROM.write(EEPROM_ADDR_MUTEX, 1);
         EEPROM.put(EEPROM_ADDR_DF, DF);
