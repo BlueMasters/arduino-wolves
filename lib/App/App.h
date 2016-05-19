@@ -9,7 +9,7 @@
 
 #define DI_GRANULARITY 100 // 1 unit means +100 ms
 #define DF_GRANULARITY 25  // 1 unit means 25 ms
-#define MAGIC 0x31424d //"B1M"
+#define MAGIC 0x31424d41   //"B1MA"
 
 
 // --------------------------------
