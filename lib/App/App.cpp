@@ -154,6 +154,16 @@ void App::saveConfig(struct wolvesConfig &config){
     // release the mutex
     EEPROM.write(EEPROM_ADDR_MUTEX, 0);
 
+    uint32_t state;
+    EEPROM.get(0, state);
+
+    if((state >> 8) != MAGIC){
+        state = MAGIC << 8;
+        // write magic
+        EEPROM.put(0, state);
+
+    }
+
     // reload config
     loadApp();
 }
