@@ -14,16 +14,16 @@
 
 #define IR_KEY_NONE  1
 #define IR_KEY_POWER 0xFF629D
-// #define IR_KEY_CH    0xFFE21D
-// #define IR_KEY_PREV  0xFF22DD
-// #define IR_KEY_PLAY  0xFFC23D
-// #define IR_KEY_NEXT  0xFF02FD
+#define IR_KEY_CH    0xFFE21D
+#define IR_KEY_PREV  0xFF22DD
+#define IR_KEY_PLAY  0xFFC23D
+#define IR_KEY_NEXT  0xFF02FD
 #define IR_KEY_MINUS 0xFFE01F
 #define IR_KEY_PLUS  0xFFA857
 
-// #define IR_KEY_EQ  0xFF906F
-// #define IR_KEY_100 0xFF9867
-// #define IR_KEY_200 0xFFB04F
+#define IR_KEY_EQ  0xFF906F
+#define IR_KEY_100 0xFF9867
+#define IR_KEY_200 0xFFB04F
 
 #define IR_KEY_0  0xFF6897
 #define IR_KEY_1  0xFF30CF
@@ -42,31 +42,20 @@
 
 typedef unsigned long IRKey;
 
-enum IRState {
-        IR_STATE_DEFAULT,
-        IR_STATE_CHOOSE_CMD,
-        IR_STATE_CONFIG,
-        IR_STATE_LEARN
-};
-
 class RemoteControl : public StateMachine {
 public:
-        RemoteControl(int pin) : _irrecv(pin), _state(IR_STATE_DEFAULT) {
-        };
+        RemoteControl(int pin) : _irrecv(pin) {};
         void begin();
         virtual void tick();
         IRKey keypressed();
 
 private:
         void handlePinCode();
-        void handleCmd();
+        void handleOkCancel();
         int lastKeyToInt();
-        void resetState();
-        void setState(enum IRState newState);
         IRrecv _irrecv;
-        long _lastrecvtime;
         IRKey _lastkey;
-        IRState _state;
+        long _lastrecvtime;
         int _pincode_idx;
 };
 

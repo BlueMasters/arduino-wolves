@@ -37,14 +37,12 @@ struct wolvesConfig {
 };
 
 enum globalMode {globmode_NORMAL, globmode_LEARN };
-enum configMode {confmode_DI, confmode_DF, confmode_None};
 
 class App {
 public:
-    App() : globalMode(globmode_NORMAL), configMode(confmode_None), emergency(false) {};
+    App() : globalMode(globmode_NORMAL), emergency(false) {};
     uint8_t pinCode[4];
     enum globalMode globalMode;
-    enum configMode configMode;
     bool emergency;
     struct wolvesConfig config;
     uint16_t DI; // Duration of Impuls (in ms)

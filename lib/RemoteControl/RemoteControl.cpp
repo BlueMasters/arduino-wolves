@@ -34,68 +34,38 @@ void RemoteControl::tick(){
 
     long now = millis();
 
-    app.emergency = false; // always reset the flag
-
-    // handle the confirm mode with one tick behind,
-    // so the app state is not reset before the
-    // other modules have a chance to handle the
-    // confirm/cancel event
-    if(_state == IR_STATE_CONFIG || _state == IR_STATE_LEARN) {
-        if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL) {
-            // back to wait cmd state (if timeout, will be handled below)
-            resetState();
-            setState(IR_STATE_CHOOSE_CMD);
-        }
-    }
-
-    // reset key state
+    // akways reset flage and key state
+    app.emergency = false;
     _lastkey = IR_KEY_NONE;
 
     // handle timeout (only in normal mode)
-    if(app.globalMode == globmode_NORMAL &&
-       now - _lastrecvtime >= IR_IDLE_TIMEOUT) {
-        if(_state == IR_STATE_CONFIG) {
-            // if executing command, send the cancel key
-            // during one tick before continuing
-            _lastkey = IR_KEY_CANCEL;
-            return; // ensure the cancel key stays for one tick
-            // next tick, handleConfirm will be called and the
-            // state will be reset
-        } else {
-            // else, simply reset the state
-            // and read next key
-            resetState();
-        }
+    if(app.globalMode == globmode_NORMAL && now - _lastrecvtime >= IR_IDLE_TIMEOUT) {
+        _pincode_idx = 0;
     }
 
-    // read next
+    // read next key
     decode_results recv_key;
 
-    if (_irrecv.decode(&recv_key)) {
+    if(_irrecv.decode(&recv_key)) { // key received
+        _irrecv.resume();
         _lastrecvtime = now;
-        _irrecv.resume(); // Receive the next value
-        if(recv_key.value == 0xFFFFFFFF) // -1 = key still pressed
-            return;
-        _lastkey = recv_key.value;
-        #ifdef APP_DEBUG
-        Serial << "IR Received : " << _HEX(recv_key.value) << "(" << _lastkey << ")" << endl;
-        #endif
 
-        if(_lastkey == IR_KEY_POWER) {
-            app.emergency = true;
-            return;
+        if(recv_key.value != 0xFFFFFFFF) { // -1 = key still pressed
+            _lastkey = recv_key.value;
+
+            #ifdef APP_DEBUG
+            Serial << "IR Received : " << _HEX(recv_key.value) << "(" << _lastkey << ")" << endl;
+            #endif
+
+            if(_lastkey == IR_KEY_POWER) {
+                // set the emergency flag for one cycle
+                app.emergency = true;
+
+            }else{
+                if(app.globalMode == globmode_NORMAL) handlePinCode();
+                else handleOkCancel();
+            }
         }
-
-    } else {
-        // no key received, nothing to do
-        return;
-    }
-
-    // handle cmd
-    switch(_state) {
-    case IR_STATE_DEFAULT: handlePinCode(); break;
-    case IR_STATE_CHOOSE_CMD: handleCmd(); break;
-    default: break;
     }
 
 } // end tick
@@ -116,72 +86,34 @@ int RemoteControl::lastKeyToInt(){
     }
 }
 
-void RemoteControl::resetState(){
-    app.globalMode = globmode_NORMAL;
-    app.configMode = confmode_None;
-    setState(IR_STATE_DEFAULT);
-    _pincode_idx = 0;
-}
-
 void RemoteControl::handlePinCode(){
 
     int key_nbr = lastKeyToInt();
+    if(key_nbr < 0) return; // ignore non number key (TODO)
+
     #ifdef APP_DEBUG
     Serial << "Key Number : " << key_nbr << endl;
     #endif
-    if(key_nbr < 0) return; // ignore non number key (TODO)
-    int expected = app.pinCode[_pincode_idx];
 
+    int expected = app.pinCode[_pincode_idx];
     if(key_nbr == expected) {
         _pincode_idx++;
-        if(_pincode_idx >= 4) {
-            // the whole code has been entered.
-            setState(IR_STATE_CHOOSE_CMD);
+        if(_pincode_idx >= 4) { // the whole code has been entered
             _pincode_idx = 0;
+            // switch mode
+            app.globalMode = globmode_LEARN;
+            app.statusLed.setColor(IR_LED_LEARN);
         }
     } else {
-        _pincode_idx = 0; // reset
+        _pincode_idx = 0; // wrong digit, reset
     }
 }
 
-void RemoteControl::handleCmd(){
-    // next state
-    switch(_lastkey) {
 
-    case IR_KEY_1:  // learn
-        app.globalMode = globmode_LEARN;
-        setState(IR_STATE_LEARN);
-        return;
-
-    case IR_KEY_2: // edit Delay of Feedback
-        app.configMode = confmode_DF;
-        setState(IR_STATE_CONFIG);
-        return;
-
-    case IR_KEY_3: // edit Delay of Impulsion
-        app.configMode = confmode_DI;
-        setState(IR_STATE_CONFIG);
-        return;
-
-    }
-}
-
-void RemoteControl::setState(enum IRState newState){
-    _state = newState;
-
-    switch (newState) {
-    case IR_STATE_DEFAULT:
+void RemoteControl::handleOkCancel(){
+    if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL){
+        app.globalMode = globmode_NORMAL;
         app.statusLed.off();
-        break;
-    case IR_STATE_CHOOSE_CMD:
-        app.statusLed.setColor(IR_LED_CHOOSE_CMD);
-        break;
-    case IR_STATE_LEARN:
-        app.statusLed.setColor(IR_LED_LEARN);
-        break;
-    case IR_STATE_CONFIG:
-        app.statusLed.setColor(app.configMode == confmode_DF ? IR_LED_CONFIG_DF : IR_LED_CONFIG_DI);
-        break;
     }
 }
 
