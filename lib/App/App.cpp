@@ -12,12 +12,13 @@ App app;
 #define NB_OF_QUESTIONS 3
 #define MAX_CARDS 32
 #define MAX_GOOD_ANSWERS 32
-#define EEPROM_ADDR_MAGIC      0  // 3 bytes
-#define EEPROM_ADDR_MUTEX      4  // 1 byte
-#define EEPROM_ADDR_PIN        5  // 4 bytes
-#define EEPROM_ADDR_DF         9  // 2 bytes
-#define EEPROM_ADDR_DI        11  // 2 bytes
-#define EEPROM_ADDR_NB_CHIPS  13  // 1 byte
+#define EEPROM_START_CONF       64
+#define EEPROM_ADDR_MAGIC      (EEPROM_START_CONF+0)   // 3 bytes
+#define EEPROM_ADDR_MUTEX      (EEPROM_START_CONF+4)   // 1 byte
+#define EEPROM_ADDR_PIN        (EEPROM_START_CONF+5)   // 4 bytes
+#define EEPROM_ADDR_DF         (EEPROM_START_CONF+9)   // 2 bytes
+#define EEPROM_ADDR_DI         (EEPROM_START_CONF+11)  // 2 bytes
+#define EEPROM_ADDR_NB_CHIPS   (EEPROM_START_CONF+13)  // 1 byte
 
 void App::loadApp() {
 
