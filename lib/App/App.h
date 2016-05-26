@@ -41,7 +41,7 @@ enum globalMode {globmode_NORMAL, globmode_LEARN };
 class App {
 public:
     App() : globalMode(globmode_NORMAL), emergency(false) {};
-    uint8_t pinCode[4];
+    String pinCode;
     enum globalMode globalMode;
     bool emergency;
     struct wolvesConfig config;

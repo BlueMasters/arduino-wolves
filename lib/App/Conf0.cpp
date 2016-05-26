@@ -17,10 +17,6 @@
 #define CONF0_REACTION_TIME 500
 #define CONF0_BUFFER_SIZE   32
 
-String conf0Pin = "1234";
-uint16_t conf0Df = 2000;
-uint16_t conf0Di = 1000;
-
 int conf0GetChar() {
     while (Serial.available() <= 0) {};
     return Serial.read();
@@ -48,16 +44,16 @@ void conf0ReadEEPROM() {
             buffer[i++] = c;
         }
         buffer[i] = '\x00';
-        conf0Pin = String(buffer);
-        EEPROM.get(CONF0_DF_ADDR + 28, conf0Df);
-        EEPROM.get(CONF0_DI_ADDR + 30, conf0Di);
+        app.pinCode = String(buffer);
+        EEPROM.get(CONF0_DF_ADDR + 28, app.DF);
+        EEPROM.get(CONF0_DI_ADDR + 30, app.DI);
     }
 }
 
 void conf0WriteEEPROM() {
     uint32_t magic = CONF0_MAGIC;
     char buffer[CONF0_MAX_PIN_LEN + 1];
-    conf0Pin.toCharArray(buffer, CONF0_MAX_PIN_LEN + 1);
+    app.pinCode.toCharArray(buffer, CONF0_MAX_PIN_LEN + 1);
 
     EEPROM.put(CONF0_MAGIC_ADDR, magic);
     int i = 0;
@@ -68,10 +64,9 @@ void conf0WriteEEPROM() {
         i++;
     }
     EEPROM[CONF0_PIN_ADDR + i] = 0;
-    EEPROM.put(CONF0_DF_ADDR + 28, conf0Df);
-    EEPROM.put(CONF0_DI_ADDR + 30, conf0Di);
+    EEPROM.put(CONF0_DF_ADDR + 28, app.DF);
+    EEPROM.put(CONF0_DI_ADDR + 30, app.DI);
 }
-
 
 void conf0Configure() {
     char buffer[CONF0_BUFFER_SIZE];
@@ -84,9 +79,9 @@ void conf0Configure() {
             if (cmd == 'x') { // Exit
                 break;
             } else if (cmd == 'd') { // Dump
-                Serial.print("p="); Serial.print(conf0Pin); Serial.print(",");
-                Serial.print("f="); Serial.print(conf0Df); Serial.print(",");
-                Serial.print("i="); Serial.print(conf0Di); Serial.print(";");
+                Serial.print("p="); Serial.print(app.pinCode); Serial.print(",");
+                Serial.print("f="); Serial.print(app.DF); Serial.print(",");
+                Serial.print("i="); Serial.print(app.DI); Serial.print(";");
             } else if (cmd == 'c') { // Config
                 char var = conf0GetChar();
                 int pos = 0;
@@ -104,9 +99,12 @@ void conf0Configure() {
                 }
                 if (pos <= 0) continue;
                 dirty = true;
-                if        (var == 'p') {conf0Pin = String(buffer);
-                } else if (var == 'i') { conf0Di = String(buffer).toInt();
-                } else if (var == 'f') { conf0Df = String(buffer).toInt();
+                if (var == 'p') {
+                    app.pinCode = String(buffer);
+                } else if (var == 'i') {
+                    app.DI = String(buffer).toInt();
+                } else if (var == 'f') {
+                    app.DF = String(buffer).toInt();
                 }
             }
         }
