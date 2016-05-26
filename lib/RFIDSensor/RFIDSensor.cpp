@@ -44,7 +44,7 @@ bool RFIDSensor::selfCheck(){
 void RFIDSensor::tick() {
     // always reinitialise this
     _changed = false;
-
+    _status = NO_CARD;
     if(_mfrc522.PICC_IsNewCardPresent() && _mfrc522.PICC_ReadCardSerial()) {
         // card detected
         struct rfidUid newCardId;

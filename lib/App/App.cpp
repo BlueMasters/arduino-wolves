@@ -72,6 +72,7 @@ void App::loadApp() {
         // nbr of answers for this question
         EEPROM.get(offset, question.len);
         offset += sizeof(question.len);
+        Serial << "question len of " << q << ": " << question.len << endl;
         // array of answers
         for(int i = 0; i < question.len; i++){
             EEPROM.get(offset, question.items[i]);
@@ -84,6 +85,8 @@ void App::loadApp() {
 }
 
 void App::saveConfig(struct wolvesConfig &config){
+
+    app.dumpConfig(config);
 
     // get mutex
     EEPROM.write(EEPROM_ADDR_MUTEX, 1);
@@ -142,21 +145,27 @@ void App::saveConfig(struct wolvesConfig &config){
 
     // reload config
     loadApp();
+    app.dump();
 }
 
-void App::dumpConfig(){
+
+void App::dump(){
     Serial << "CONFIG" << endl;
     Serial << "DF: " << app.DF << " DI: " << app.DI << endl;
     Serial << "pincode: " << app.pinCode << endl;
-    Serial << "cards: " << app.config.cards.len << endl;
-    for(int i = 0; i < app.config.cards.len; i++) {
-        Serial << "  " << _HEX(app.config.cards.items[i].data[0]) << endl;
+    app.dumpConfig(app.config);
+}
+
+void App::dumpConfig(struct wolvesConfig& config){
+    Serial << "cards: " << config.cards.len << endl;
+    for(int i = 0; i < config.cards.len; i++) {
+        Serial << "  " << _HEX(config.cards.items[i].data[0]) << endl;
     }
     Serial << endl;
 
-    Serial << "questions: " << app.config.questions.len << endl;
-    for(int i = 0; i < app.config.questions.len; i++) {
-        wolvesConfigQuestion &q = app.config.questions.question[0];
+    Serial << "questions: " << config.questions.len << endl;
+    for(int i = 0; i < config.questions.len; i++) {
+        wolvesConfigQuestion &q = config.questions.question[i];
         Serial << "  " << q.len << " :";
         for(int j = 0; j < q.len; j++){
             Serial << " " << q.items[j];

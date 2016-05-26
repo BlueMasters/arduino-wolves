@@ -112,7 +112,7 @@ void setup() {
     app.loadApp();
     learnModeHandler.begin();
     #ifdef DEBUG
-    if(app.globalMode == globmode_NORMAL) app.dumpConfig();
+    if(app.globalMode == globmode_NORMAL) app.dump();
     #endif
 }
 
