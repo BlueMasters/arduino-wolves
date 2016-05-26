@@ -38,8 +38,13 @@ void RemoteControl::tick(){
     app.emergency = false;
     _lastkey = IR_KEY_NONE;
 
+
+    // handle ok/cancel one tick late, to allow the
+    // other to see the key before resetting the app global mode
+    if(app.globalMode == globmode_LEARN){
+        handleOkCancel();
+    }else if(now - _lastrecvtime >= IR_IDLE_TIMEOUT){
     // handle timeout (only in normal mode)
-    if(app.globalMode == globmode_NORMAL && now - _lastrecvtime >= IR_IDLE_TIMEOUT) {
         _pincode_idx = 0;
     }
 
@@ -61,9 +66,8 @@ void RemoteControl::tick(){
                 // set the emergency flag for one cycle
                 app.emergency = true;
 
-            }else{
-                if(app.globalMode == globmode_NORMAL) handlePinCode();
-                else handleOkCancel();
+            }else if(app.globalMode == globmode_NORMAL){
+                handlePinCode();
             }
         }
     }
@@ -112,6 +116,9 @@ void RemoteControl::handlePinCode(){
 
 void RemoteControl::handleOkCancel(){
     if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL){
+        #ifdef DEBUG
+        Serial << "switch back to normal mode" << endl;
+        #endif
         app.globalMode = globmode_NORMAL;
         app.statusLed.off();
     }
