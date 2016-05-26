@@ -22,6 +22,7 @@
 #include "LED.h"
 #include "RGBLED.h"
 #include "RFIDSensor.h"
+#include "RFIDUid.h"
 #include "Solenoid.h"
 #include "RemoteControl.h"
 #include "LearnModeHandler.h"

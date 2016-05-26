@@ -91,6 +91,10 @@ bool RFIDSensor::changed() {
     return _changed;
 }
 
+struct rfidUid RFIDSensor::cardId(){
+    return _cardId;
+}
+
 
 // void RFIDSensor::dumpUID(struct rfidUid uid){
 //   byte i;

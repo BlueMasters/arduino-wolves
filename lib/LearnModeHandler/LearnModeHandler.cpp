@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include "LearnModeHandler.h"
+#include "RFIDUid.h"
+#include "RFIDSensor.h"
 #include <Streaming.h>
 #include "App.h"
 
