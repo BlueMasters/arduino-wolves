@@ -110,6 +110,10 @@ void setup() {
     // checkSolenoids();
     checkRFIDSensors();
     app.loadApp();
+    learnModeHandler.begin();
+    #ifdef DEBUG
+    if(app.globalMode == globmode_NORMAL) app.dumpConfig();
+    #endif
 }
 
 void loop() {

@@ -14,7 +14,7 @@
 
 #define CONF0_ENQ          '>'
 #define CONF0_ACK          '!'
-#define CONF0_REACTION_TIME 500
+#define CONF0_REACTION_TIME 1000
 #define CONF0_BUFFER_SIZE   32
 
 int conf0GetChar() {
@@ -69,6 +69,7 @@ void conf0WriteEEPROM() {
 }
 
 void conf0Configure() {
+    conf0ReadEEPROM();
     char buffer[CONF0_BUFFER_SIZE];
     bool dirty = false;
     Serial.write(CONF0_ENQ);

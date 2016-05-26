@@ -55,18 +55,23 @@ void RFIDSensor::tick() {
             return;
         }
 
+        #ifdef DEBUG
+        Serial.println("card detected");
+        #endif
+
         // this is a new card -> update the status
         _cardId.set(newCardId.size, newCardId.data);
         _changed = true;
         validateNewCard();
 
         // in APP_DEBUG mode, print the detected card
-    #ifdef APP_DEBUG
+        #ifdef APP_DEBUG
         Serial << "Card #" << _id << " = ";
         _cardId.dump();
         Serial << (_status == VALID_CARD ? " valid" : " invalid") << endl;
-    #endif
-    }
+        #endif
+
+        }
 }
 
 void RFIDSensor::validateNewCard(){

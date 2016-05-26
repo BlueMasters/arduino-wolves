@@ -40,18 +40,8 @@ void App::loadApp() {
     // set mutex
     EEPROM.write(EEPROM_ADDR_MUTEX, 1);
 
-    // read pin
-    int offset = EEPROM_ADDR_PIN;
-    for(int i = 0; i < 4; i++){
-        EEPROM.get(offset++, app.pinCode[i]);
-    }
-
-    // read DF and DI
-    EEPROM.get(EEPROM_ADDR_DF, app.DF);
-    EEPROM.get(EEPROM_ADDR_DI, app.DI);
-
     // read chips
-    offset = EEPROM_ADDR_NB_CHIPS;
+    int offset = EEPROM_ADDR_NB_CHIPS;
     struct wolvesConfigCards &cards = app.config.cards;
 
     // nbr of chips
@@ -95,19 +85,12 @@ void App::loadApp() {
 
 void App::saveConfig(struct wolvesConfig &config){
 
-    // check mutex
-    if(EEPROM.read(EEPROM_ADDR_MUTEX) != 0){
-        // TODO
-        Serial << "(save config) MUTEX SET!!!" << endl;
-        while(1);
-    }
-
     // get mutex
     EEPROM.write(EEPROM_ADDR_MUTEX, 1);
 
     // write chips
     int offset = EEPROM_ADDR_NB_CHIPS;
-    struct wolvesConfigCards &cards = app.config.cards;
+    struct wolvesConfigCards &cards = config.cards;
     // nbr of chips
     EEPROM.put(offset, cards.len);
     offset += sizeof(cards.len);
@@ -125,6 +108,7 @@ void App::saveConfig(struct wolvesConfig &config){
 
     // write Q&A
     struct wolvesConfigQuestions &questions = config.questions;
+    Serial << "nb questions " << config.questions.len << endl;
     // nbr of Q
     EEPROM.put(offset, questions.len);
     offset += sizeof(questions.len);
@@ -143,11 +127,11 @@ void App::saveConfig(struct wolvesConfig &config){
 
     // check the MAGIC, setting it if missing
     uint32_t magic;
-    EEPROM.get(0, magic);
+    EEPROM.get(EEPROM_ADDR_MAGIC, magic);
     if(magic != MAGIC){
         magic = MAGIC;
         // write magic
-        EEPROM.put(0, magic);
+        EEPROM.put(EEPROM_ADDR_MAGIC, magic);
         #ifdef APP_DEBUG
         Serial << "(App::writeConfig) magic missing -> wrote magic " << _HEX(magic) << endl;
         #endif
@@ -156,18 +140,31 @@ void App::saveConfig(struct wolvesConfig &config){
     // release the mutex
     EEPROM.write(EEPROM_ADDR_MUTEX, 0);
 
-    uint32_t state;
-    EEPROM.get(EEPROM_ADDR_MAGIC, state);
-
-    if((state >> 8) != MAGIC){
-        state = MAGIC << 8;
-        // write magic
-        EEPROM.put(EEPROM_ADDR_MAGIC, state);
-
-    }
-
     // reload config
     loadApp();
+}
+
+void App::dumpConfig(){
+    Serial << "CONFIG" << endl;
+    Serial << "DF: " << app.DF << " DI: " << app.DI << endl;
+    Serial << "pincode: " << app.pinCode << endl;
+    Serial << "cards: " << app.config.cards.len << endl;
+    for(int i = 0; i < app.config.cards.len; i++) {
+        Serial << "  " << _HEX(app.config.cards.items[i].data[0]) << endl;
+    }
+    Serial << endl;
+
+    Serial << "questions: " << app.config.questions.len << endl;
+    for(int i = 0; i < app.config.questions.len; i++) {
+        wolvesConfigQuestion &q = app.config.questions.question[0];
+        Serial << "  " << q.len << " :";
+        for(int j = 0; j < q.len; j++){
+            Serial << " " << q.items[j];
+        }
+    }
+    Serial << endl;
+
+
 }
 
 // TODO: keep those methods anyway ?

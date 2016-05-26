@@ -48,6 +48,7 @@ public:
     uint16_t DI; // Duration of Impuls (in ms)
     uint16_t DF; // Duration of Feedback (in ms)
     RGBLED statusLed;
+    void dumpConfig();
 
     void loadApp(); // Load pinCode, config, DI and DF. // TODO Take granularity into account.
     void saveDI(uint16_t DI);

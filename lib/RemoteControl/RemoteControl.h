@@ -44,7 +44,7 @@ typedef unsigned long IRKey;
 
 class RemoteControl : public StateMachine {
 public:
-        RemoteControl(int pin) : _irrecv(pin) {};
+        RemoteControl(int pin) : _irrecv(pin), _lastrecvtime(0) {};
         void begin();
         virtual void tick();
         IRKey keypressed();
@@ -52,7 +52,7 @@ public:
 private:
         void handlePinCode();
         void handleOkCancel();
-        int lastKeyToInt();
+        char lastKeyToChar();
         IRrecv _irrecv;
         IRKey _lastkey;
         long _lastrecvtime;

@@ -47,6 +47,7 @@ void LearnModeHandler::tick(){
 
 void LearnModeHandler::reset(){
     _config.cards.len = 0;
+    _config.questions.len = NB_OF_QUESTIONS;
     for(int i = 0; i < NB_OF_QUESTIONS; i++){
         _config.questions.question[i].len = 0;
     }
@@ -75,6 +76,7 @@ int LearnModeHandler::addCard(struct rfidUid card){
 
 
 void LearnModeHandler::addAnswer(int q, int idx){
+    Serial << " questions nbr " << _config.questions.len << endl;
     wolvesConfigQuestion &question = _config.questions.question[q];
     // TODO is this check necessary ?
     for(int i = 0; i < question.len; i++){
@@ -85,6 +87,6 @@ void LearnModeHandler::addAnswer(int q, int idx){
     }
     question.items[question.len++] = idx;
     #ifdef DEBUG
-    Serial << "added answer for question " << q << "(" << idx << ")" << endl;
+    Serial << "added answer for question " << q << idx <<  "(" << question.len << ")" << endl;
     #endif
 }
