@@ -56,7 +56,7 @@ private:
         IRrecv _irrecv;
         IRKey _lastkey;
         long _lastrecvtime;
-        int _pincode_idx;
+        unsigned _pincode_idx;
 };
 
 #endif

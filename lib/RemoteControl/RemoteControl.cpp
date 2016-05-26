@@ -95,10 +95,10 @@ void RemoteControl::handlePinCode(){
     Serial << "Key Number : " << key_nbr << endl;
     #endif
 
-    int expected = app.pinCode[_pincode_idx];
+    int expected = app.pinCode.charAt(_pincode_idx);
     if(key_nbr == expected) {
         _pincode_idx++;
-        if(_pincode_idx >= 4) { // the whole code has been entered
+        if(_pincode_idx >= app.pinCode.length()) { // the whole code has been entered
             _pincode_idx = 0;
             // switch mode
             app.globalMode = globmode_LEARN;

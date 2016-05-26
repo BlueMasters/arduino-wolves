@@ -24,6 +24,7 @@
 #include "RFIDSensor.h"
 #include "Solenoid.h"
 #include "RemoteControl.h"
+#include "LearnModeHandler.h"
 
 
 #define VERSION "0.0.1"
@@ -50,6 +51,7 @@ Solenoid solenoids[NB_OF_QUESTIONS] = {
 };
 
 RemoteControl remoteCtrl(11);
+LearnModeHandler learnModeHandler(remoteCtrl, sensors);
 
 void checkSolenoids() {
     for (int i = 0; i < NB_OF_QUESTIONS; i++)
@@ -106,12 +108,7 @@ void setup() {
     // app.statusLed.selfCheck();
     // checkSolenoids();
     checkRFIDSensors();
-    for (int i = 0; i < 4; i++) {
-        app.pinCode[i] = i+1;
-    }
-    app.DF = 2500;
-    app.DI = 1000;
-    // app.loadApp();
+    app.loadApp();
 }
 
 void loop() {
@@ -123,6 +120,7 @@ void loop() {
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         solenoids[i].tick();
     }
+    learnModeHandler.tick();
     // heartbeat++;
     // if (heartbeat > HEARTBEAT_COUNTER) {
     //     app.statusLed.off();
