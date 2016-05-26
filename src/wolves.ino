@@ -18,6 +18,7 @@
 #include <Streaming.h>
 #include <EEPROM.h>
 #include "App.h"
+#include "Conf0.h"
 #include "LED.h"
 #include "RGBLED.h"
 #include "RFIDSensor.h"
@@ -91,6 +92,7 @@ void checkRFIDSensors() {
 
 void setup() {
     Serial.begin(9600);
+    conf0Configure();
     Serial << "Volves version " << VERSION << endl;
     Serial << "Copyright (c) 2016 BlueMasters Fribourg" << endl;
     SPI.begin();
