@@ -8,7 +8,6 @@
 
 App app;
 
-
 #define NB_OF_QUESTIONS 3
 #define MAX_CARDS 32
 #define MAX_GOOD_ANSWERS 32
@@ -24,11 +23,13 @@ void App::loadApp() {
 
     // check MAGIC
     uint32_t magic;
-    EEPROM.get(0, magic);
+    EEPROM.get(EEPROM_ADDR_MAGIC, magic);
     if(magic != MAGIC){
         // TODO wrong magic, what do we do ?
         Serial << "WRONG MAGIC !!!!" << _HEX(magic) << " " << _HEX(MAGIC) << endl;
-        while(1);
+        Serial << "Entering learn mode" << endl;
+        app.globalMode = globmode_LEARN;
+        return;
     }
 
     // check mutex
@@ -156,12 +157,12 @@ void App::saveConfig(struct wolvesConfig &config){
     EEPROM.write(EEPROM_ADDR_MUTEX, 0);
 
     uint32_t state;
-    EEPROM.get(0, state);
+    EEPROM.get(EEPROM_ADDR_MAGIC, state);
 
     if((state >> 8) != MAGIC){
         state = MAGIC << 8;
         // write magic
-        EEPROM.put(0, state);
+        EEPROM.put(EEPROM_ADDR_MAGIC, state);
 
     }
 
