@@ -17,13 +17,10 @@
 #include <Arduino.h>
 #include <IRremote.h>
 #include <Streaming.h>
-
 #include "RemoteControl.h"
 #include "App.h"
 
 #define IR_LED_CHOOSE_CMD 0xFF7400 // orange
-#define IR_LED_CONFIG_DF  0xAE56DF // light violet
-#define IR_LED_CONFIG_DI  0x400362 // dark violet
 #define IR_LED_LEARN      0x3029D6 // bright blue
 
 void RemoteControl::begin(){
@@ -42,7 +39,7 @@ void RemoteControl::tick(){
     // handle timeout (only in normal mode)
         _pincode_idx = 0;
     }
-    
+
     // akways reset flage and key state
     app.emergency = false;
     _lastkey = IR_KEY_NONE;
@@ -85,17 +82,16 @@ char RemoteControl::lastKeyToChar(){
     case IR_KEY_7: return '7';
     case IR_KEY_8: return '8';
     case IR_KEY_9: return '9';
-    default: return ' ';
+    default: return 0;
     }
 }
 
 void RemoteControl::handlePinCode(){
 
     char key_nbr = lastKeyToChar();
-    if(key_nbr == ' ') return; // ignore non number key (TODO)
+    if(key_nbr == 0) return; // ignore non 'number' key
 
     char expected = app.pinCode.charAt(_pincode_idx);
-
 
     #ifdef APP_DEBUG
     Serial << "Key Number : " << key_nbr << " expected: " << expected << " "  << endl;
@@ -108,7 +104,7 @@ void RemoteControl::handlePinCode(){
             // switch mode
             app.globalMode = globmode_LEARN;
             app.statusLed.setColor(IR_LED_LEARN);
-            #ifdef DEBUG
+            #ifdef APP_DEBUG
             Serial << "switching to learnmode " << endl;
             #endif
         }
@@ -120,7 +116,7 @@ void RemoteControl::handlePinCode(){
 
 void RemoteControl::handleOkCancel(){
     if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL){
-        #ifdef DEBUG
+        #ifdef APP_DEBUG
         Serial << "switch back to normal mode" << endl;
         #endif
         app.globalMode = globmode_NORMAL;
