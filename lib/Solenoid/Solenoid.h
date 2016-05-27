@@ -45,6 +45,7 @@ private:
     RFIDSensor _sensor;
     LED _led;
     solenoidState _state;
+    enum rfidSensorStatus _sensorState;
     long _timestamp;
     void fire(long t);
     void release(long t);

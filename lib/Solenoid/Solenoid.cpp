@@ -25,10 +25,12 @@ void Solenoid::begin() {
     off();
     pinMode(_impulsePin, OUTPUT);
     _state = SOLENOID_IDLE;
+    _sensorState = NO_CARD;
 }
 
 void Solenoid::on() {
     digitalWrite(_impulsePin, LOW);
+    _sensorState = NO_CARD; // see in tick to find out why this is here.
 }
 
 void Solenoid::off() {
@@ -48,6 +50,15 @@ void Solenoid::release(long t) {
 
 void Solenoid::tick() {
     long now = millis();
+    // Read sensor state
+    enum rfidSensorStatus newSensorState = _sensor.rfidSensorStatus();
+    // If we have a card, so we save this in the _sensorState attribute.
+    // We will receive this information only once, and it might arrive
+    // during a "FROZEN" state, so we have to save it. We will put it
+    // back to NO_CARD only when we pull the solenoid.
+    if (newSensorState == VALID_CARD || newSensorState == INVALID_CARD) {
+        _sensorState = newSensorState;
+    }
 
     switch (_state) {
     case SOLENOID_IDLE:
@@ -55,10 +66,10 @@ void Solenoid::tick() {
             fire(now);
             _state = SOLENOID_FIRED;
             _led.green();
-        } else if (_sensor.rfidSensorStatus() == VALID_CARD) {
+        } else if (_sensorState == VALID_CARD) {
             _led.green();
             _state = SOLENOID_FROZEN;
-        } else if (_sensor.rfidSensorStatus() == INVALID_CARD) {
+        } else if (_sensorState == INVALID_CARD) {
             _led.red();
             _state = SOLENOID_FROZEN;
         } else { // Idle and no reason to change.
