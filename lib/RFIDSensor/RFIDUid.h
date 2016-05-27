@@ -2,6 +2,7 @@
 #define RFIDUID__H
 
 #include <Arduino.h>
+#include <Streaming.h>
 
 struct rfidUid {
     byte size;
@@ -23,7 +24,11 @@ struct rfidUid {
     }
 
     void dump(){
-        // TODO
+        Serial << "CARD: ";
+        for(int i = 0; i < size; i++){
+            Serial << _HEX(data[i]) << " ";
+        }
+        Serial << endl;
     }
 };
 

@@ -52,7 +52,7 @@ public:
 private:
         void handlePinCode();
         void handleOkCancel();
-        int lastKeyToInt();
+        char lastKeyToChar();
         IRrecv _irrecv;
         IRKey _lastkey;
         long _lastrecvtime;

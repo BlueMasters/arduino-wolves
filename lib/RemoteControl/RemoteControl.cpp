@@ -17,13 +17,10 @@
 #include <Arduino.h>
 #include <IRremote.h>
 #include <Streaming.h>
-
 #include "RemoteControl.h"
 #include "App.h"
 
 #define IR_LED_CHOOSE_CMD 0xFF7400 // orange
-#define IR_LED_CONFIG_DF  0xAE56DF // light violet
-#define IR_LED_CONFIG_DI  0x400362 // dark violet
 #define IR_LED_LEARN      0x3029D6 // bright blue
 
 void RemoteControl::begin(){
@@ -34,14 +31,18 @@ void RemoteControl::tick(){
 
     long now = millis();
 
+    // handle ok/cancel one tick late, to allow the
+    // other to see the key before resetting the app global mode
+    if(app.globalMode == globmode_LEARN){
+        handleOkCancel();
+    }else if(now - _lastrecvtime >= IR_IDLE_TIMEOUT){
+    // handle timeout (only in normal mode)
+        _pincode_idx = 0;
+    }
+
     // akways reset flage and key state
     app.emergency = false;
     _lastkey = IR_KEY_NONE;
-
-    // handle timeout (only in normal mode)
-    if(app.globalMode == globmode_NORMAL && now - _lastrecvtime >= IR_IDLE_TIMEOUT) {
-        _pincode_idx = 0;
-    }
 
     // read next key
     decode_results recv_key;
@@ -61,41 +62,41 @@ void RemoteControl::tick(){
                 // set the emergency flag for one cycle
                 app.emergency = true;
 
-            }else{
-                if(app.globalMode == globmode_NORMAL) handlePinCode();
-                else handleOkCancel();
+            }else if(app.globalMode == globmode_NORMAL){
+                handlePinCode();
             }
         }
     }
 
 } // end tick
 
-int RemoteControl::lastKeyToInt(){
+char RemoteControl::lastKeyToChar(){
     switch(_lastkey) {
-    case IR_KEY_0: return 0;
-    case IR_KEY_1: return 1;
-    case IR_KEY_2: return 2;
-    case IR_KEY_3: return 3;
-    case IR_KEY_4: return 4;
-    case IR_KEY_5: return 5;
-    case IR_KEY_6: return 6;
-    case IR_KEY_7: return 7;
-    case IR_KEY_8: return 8;
-    case IR_KEY_9: return 9;
-    default: return -1;
+    case IR_KEY_0: return '0';
+    case IR_KEY_1: return '1';
+    case IR_KEY_2: return '2';
+    case IR_KEY_3: return '3';
+    case IR_KEY_4: return '4';
+    case IR_KEY_5: return '5';
+    case IR_KEY_6: return '6';
+    case IR_KEY_7: return '7';
+    case IR_KEY_8: return '8';
+    case IR_KEY_9: return '9';
+    default: return 0;
     }
 }
 
 void RemoteControl::handlePinCode(){
 
-    int key_nbr = lastKeyToInt();
-    if(key_nbr < 0) return; // ignore non number key (TODO)
+    char key_nbr = lastKeyToChar();
+    if(key_nbr == 0) return; // ignore non 'number' key
+
+    char expected = app.pinCode.charAt(_pincode_idx);
 
     #ifdef APP_DEBUG
-    Serial << "Key Number : " << key_nbr << endl;
+    Serial << "Key Number : " << key_nbr << " expected: " << expected << " "  << endl;
     #endif
 
-    int expected = app.pinCode.charAt(_pincode_idx);
     if(key_nbr == expected) {
         _pincode_idx++;
         if(_pincode_idx >= app.pinCode.length()) { // the whole code has been entered
@@ -103,6 +104,9 @@ void RemoteControl::handlePinCode(){
             // switch mode
             app.globalMode = globmode_LEARN;
             app.statusLed.setColor(IR_LED_LEARN);
+            #ifdef APP_DEBUG
+            Serial << "switching to learnmode " << endl;
+            #endif
         }
     } else {
         _pincode_idx = 0; // wrong digit, reset
@@ -112,6 +116,9 @@ void RemoteControl::handlePinCode(){
 
 void RemoteControl::handleOkCancel(){
     if(_lastkey == IR_KEY_OK || _lastkey == IR_KEY_CANCEL){
+        #ifdef APP_DEBUG
+        Serial << "switch back to normal mode" << endl;
+        #endif
         app.globalMode = globmode_NORMAL;
         app.statusLed.off();
     }
