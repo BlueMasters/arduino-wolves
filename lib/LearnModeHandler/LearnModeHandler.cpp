@@ -17,17 +17,18 @@ void LearnModeHandler::tick(){
     // NOTE: this supposes that the remote will
     // reset the globalMode upon OK/CANCEL after one tick.
     // if not, we will have inconsistancies.
+    // the same goes for rfidSensorStatus
 
     if(_remote.keypressed() == IR_KEY_CANCEL){
-        #ifdef DEBUG
-        Serial << "aborting learn mode (cancel)" << endl;
+        #ifdef APP_DEBUG
+        Serial << "LEARN MODE: cancel " << endl;
         #endif
         // cancel
         reset();
 
     }else if(_remote.keypressed() == IR_KEY_OK){
-        #ifdef DEBUG
-        Serial << "saving config" << endl;
+        #ifdef APP_DEBUG
+        Serial << "LEARN MODE: saving config" << endl;
         #endif
         // save and reset
         app.saveConfig(_config);
@@ -36,7 +37,7 @@ void LearnModeHandler::tick(){
     }else{
         // still in learn mode, check for new RFID cards
         for (int i = 0; i < NB_OF_QUESTIONS; i++){
-            if(_sensors[i].changed()){
+            if(_sensors[i].rfidSensorStatus() != NO_CARD){
                 int idx = addCard(_sensors[i].cardId());
                 addAnswer(i, idx);
             }
@@ -48,12 +49,10 @@ void LearnModeHandler::tick(){
 void LearnModeHandler::reset(){
     _config.cards.len = 0;
     _config.questions.len = NB_OF_QUESTIONS;
+
     for(int i = 0; i < NB_OF_QUESTIONS; i++){
         _config.questions.question[i].len = 0;
     }
-    #ifdef DEBUG
-    Serial << "reset temp config" << endl;
-    #endif
 }
 
 
@@ -67,16 +66,17 @@ int LearnModeHandler::addCard(struct rfidUid card){
         }
     }
     // new card, add it to the list:
-    cards.items[cards.len++].set(card.size, card.data);
-    #ifdef DEBUG
-    Serial << "added card " << _HEX(card.data[0]) << endl;
+    cards.items[cards.len].set(card.size, card.data);
+    #ifdef APP_DEBUG
+    Serial << "LEARN MODE:  added new ";
+    cards.items[cards.len].dump();
     #endif
-    return (cards.len - 1);
+    return (cards.len++);
 }
 
 
 void LearnModeHandler::addAnswer(int q, int idx){
-    Serial << " questions nbr " << _config.questions.len << endl;
+
     wolvesConfigQuestion &question = _config.questions.question[q];
     // TODO is this check necessary ?
     for(int i = 0; i < question.len; i++){
@@ -86,7 +86,7 @@ void LearnModeHandler::addAnswer(int q, int idx){
         }
     }
     question.items[question.len++] = idx;
-    #ifdef DEBUG
-    Serial << "added answer for question " << q << idx <<  "(" << question.len << ")" << endl;
+    #ifdef APP_DEBUG
+    Serial << "LEARN MODE: add answer idx=" << idx << " for question=" << q << endl;
     #endif
 }

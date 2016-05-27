@@ -12,9 +12,8 @@ class RFIDSensor : public StateMachine {
 public:
     RFIDSensor(int id) : _id(id) {};
     RFIDSensor(int id, int csPin, int resetPin) :
-        _id(id), _status(NO_CARD), _changed(false), _mfrc522(csPin, resetPin) {};
+        _id(id), _status(NO_CARD), _mfrc522(csPin, resetPin) {};
 
-    bool changed();
     struct rfidUid cardId();
     enum rfidSensorStatus rfidSensorStatus();
     void begin();
@@ -28,7 +27,6 @@ public:
 private:
     int _id;
     enum rfidSensorStatus _status;
-    bool _changed;
     MFRC522 _mfrc522;
     struct rfidUid _cardId;
 

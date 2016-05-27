@@ -42,43 +42,31 @@ bool RFIDSensor::selfCheck(){
 }
 
 void RFIDSensor::tick() {
-    // always reinitialise this
-    _changed = false;
+    // always reinitialise the status
     _status = NO_CARD;
     if(_mfrc522.PICC_IsNewCardPresent() && _mfrc522.PICC_ReadCardSerial()) {
         // card detected
-        struct rfidUid newCardId;
-        newCardId.set(_mfrc522.uid.size, _mfrc522.uid.uidByte);
-
-        if(newCardId.equals(&_cardId)) {
-            // no changes, do nothing.
-            return;
-        }
-
-        #ifdef DEBUG
-        Serial.println("card detected");
-        #endif
-
-        // this is a new card -> update the status
-        _cardId.set(newCardId.size, newCardId.data);
-        _changed = true;
+        _cardId.set(_mfrc522.uid.size, _mfrc522.uid.uidByte);
         validateNewCard();
 
-        // in APP_DEBUG mode, print the detected card
         #ifdef APP_DEBUG
-        Serial << "Card #" << _id << " = ";
+        Serial << "RFID " << _id << ": detected " << (_status == VALID_CARD ? "valid " : "invalid ");
         _cardId.dump();
-        Serial << (_status == VALID_CARD ? " valid" : " invalid") << endl;
         #endif
 
-        }
+        // Halt PICC
+        _mfrc522.PICC_HaltA();
+        // Stop encryption on PCD
+        _mfrc522.PCD_StopCrypto1();
+    }
 }
 
 void RFIDSensor::validateNewCard(){
     struct rfidUid * cards = app.config.cards.items;
+    wolvesConfigQuestion &question = app.config.questions.question[_id];
 
-    for(int ans = 0; app.config.questions.question[_id].len; ans++) {
-        int idx = app.config.questions.question[_id].items[ans];
+    for(int ans = 0; ans < question.len; ans++) {
+        int idx = question.items[ans];
         if(_cardId.equals(&cards[idx])) {
             _status = VALID_CARD;
             return;
@@ -90,10 +78,6 @@ void RFIDSensor::validateNewCard(){
 
 enum rfidSensorStatus RFIDSensor::rfidSensorStatus() {
     return _status;
-}
-
-bool RFIDSensor::changed() {
-    return _changed;
 }
 
 struct rfidUid RFIDSensor::cardId(){
