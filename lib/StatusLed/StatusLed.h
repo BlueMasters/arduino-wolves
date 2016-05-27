@@ -14,8 +14,8 @@
  * limitations under the License.
  *****************************************************************************/
 
-#ifndef RGBLED__H
-#define RGBLED__H
+#ifndef STATUS_LED__H
+#define STATUS_LED__H
 
 #define COLOR_BLACK  0x000000
 #define COLOR_RED    0xFF0000
@@ -23,25 +23,29 @@
 #define COLOR_BLUE   0x0000FF
 #define COLOR_WHITE  0xFFFFFF
 
-#include <Arduino.h>
 
-class RGBLED {
+
+#include <Arduino.h>
+#include "StateMachine.h"
+
+class StatusLed : public StateMachine {
 
 public:
-    RGBLED() {};
-    RGBLED(int redPin, int greenPin, int bluePin) :
+    StatusLed() {};
+    StatusLed(int redPin, int greenPin, int bluePin) :
         _redPin(redPin), _greenPin(greenPin), _bluePin(bluePin) {};
     void begin();
     void begin(int redPin, int greenPin, int bluePin);
     void setColor(uint32_t color);
     void off();
+    void tick();
     int selfCheck();
 
 private:
     int _redPin;
     int _greenPin;
     int _bluePin;
+    int _tickCount;
 };
-
 
 #endif

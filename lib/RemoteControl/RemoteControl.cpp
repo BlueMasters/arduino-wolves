@@ -20,9 +20,6 @@
 #include "RemoteControl.h"
 #include "App.h"
 
-#define IR_LED_CHOOSE_CMD 0xFF7400 // orange
-#define IR_LED_LEARN      0x3029D6 // bright blue
-
 void RemoteControl::begin(){
     _irrecv.enableIRIn(); // Start the receiver
 }
@@ -103,7 +100,7 @@ void RemoteControl::handlePinCode(){
             _pincode_idx = 0;
             // switch mode
             app.globalMode = globmode_LEARN;
-            app.statusLed.setColor(IR_LED_LEARN);
+            // app.statusLed.setColor(IR_LED_LEARN);
             #ifdef APP_DEBUG
             Serial << "switching to learnmode " << endl;
             #endif
@@ -120,7 +117,7 @@ void RemoteControl::handleOkCancel(){
         Serial << "switch back to normal mode" << endl;
         #endif
         app.globalMode = globmode_NORMAL;
-        app.statusLed.off();
+        // app.statusLed.off();
     }
 }
 

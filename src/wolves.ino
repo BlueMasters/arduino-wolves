@@ -20,7 +20,7 @@
 #include "App.h"
 #include "Conf0.h"
 #include "LED.h"
-#include "RGBLED.h"
+#include "StatusLed.h"
 #include "RFIDSensor.h"
 #include "RFIDUid.h"
 #include "Solenoid.h"
@@ -30,8 +30,6 @@
 
 #define VERSION "0.0.1"
 
-#define HEARTBEAT_COUNTER 10000
-#define HEARTBEAT_WIDTH     100
 
 LED leds[NB_OF_QUESTIONS] = {
     LED(23,24),
@@ -106,9 +104,11 @@ void setup() {
         solenoids[i].begin();
         sensors[i].begin();
     }
-    // app.statusLed.selfCheck();
-    // checkSolenoids();
+    Serial << "Self-check running..." << endl;
+    app.statusLed.selfCheck();
+    checkSolenoids();
     checkRFIDSensors();
+    Serial << "Self-check OK." << endl << endl;
     app.loadApp();
     learnModeHandler.begin();
     #ifdef DEBUG
@@ -117,7 +117,6 @@ void setup() {
 }
 
 void loop() {
-    static long heartbeat = 0;
     remoteCtrl.tick();
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         sensors[i].tick();
@@ -126,11 +125,5 @@ void loop() {
         solenoids[i].tick();
     }
     learnModeHandler.tick();
-    // heartbeat++;
-    // if (heartbeat > HEARTBEAT_COUNTER) {
-    //     app.statusLed.off();
-    //     heartbeat = 0;
-    // } else if (heartbeat > HEARTBEAT_COUNTER - HEARTBEAT_WIDTH){
-    //     app.statusLed.setColor(COLOR_BLUE);
-    // }
+    app.statusLed.tick();
 }

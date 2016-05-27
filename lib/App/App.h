@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "RFIDUid.h"
-#include "RGBLED.h"
+#include "StatusLed.h"
 
 #define APP_DEBUG
 
@@ -47,7 +47,7 @@ public:
     struct wolvesConfig config;
     uint16_t DI; // Duration of Impuls (in ms)
     uint16_t DF; // Duration of Feedback (in ms)
-    RGBLED statusLed;
+    StatusLed statusLed;
     void dump();
     void dumpConfig(struct wolvesConfig& config);
 
