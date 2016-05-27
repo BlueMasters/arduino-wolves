@@ -68,9 +68,11 @@ void Solenoid::tick() {
             _led.green();
         } else if (_sensorState == VALID_CARD) {
             _led.green();
+            _timestamp = now;
             _state = SOLENOID_FROZEN;
         } else if (_sensorState == INVALID_CARD) {
             _led.red();
+            _timestamp = now;
             _state = SOLENOID_FROZEN;
         } else { // Idle and no reason to change.
             off();
