@@ -26,10 +26,11 @@
 #include "Solenoid.h"
 #include "RemoteControl.h"
 #include "LearnModeHandler.h"
+#include "AsnLMsg.h"
 
+#define VERSION "0.0.9"
 
-#define VERSION "0.0.1"
-
+#define ONBOARD_LED 13
 
 LED leds[NB_OF_QUESTIONS] = {
     LED(23,24),
@@ -92,8 +93,11 @@ void checkRFIDSensors() {
 }
 
 void setup() {
+    pinMode(ONBOARD_LED, OUTPUT);
+    digitalWrite(ONBOARD_LED, HIGH);
     Serial.begin(9600);
     conf0Configure();
+    digitalWrite(ONBOARD_LED, LOW);
     Serial << "Volves version " << VERSION << endl;
     Serial << "Copyright (c) 2016 BlueMasters Fribourg" << endl;
     SPI.begin();
