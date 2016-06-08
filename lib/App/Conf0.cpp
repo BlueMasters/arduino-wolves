@@ -17,6 +17,7 @@
 #include <Arduino.h>
 
 #include "AsnLMsg.h"
+#include "App.h"
 #include "AsnLWriter.h"
 #include "AsnLParser.h"
 #include <EEPROM.h>
@@ -35,12 +36,6 @@
 #define CONF0_ACK          '!'
 #define CONF0_REACTION_TIME 500
 #define CONF0_BUFFER_SIZE   32
-
-struct {
-    String pinCode;
-    int16_t DF;
-    int16_t DI;
-} app;
 
 int conf0ReadEEPROM() {
     uint32_t magic;
