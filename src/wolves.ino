@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *****************************************************************************
+ *
+ * Wolves.ino. This is the main program for the Arduino Wolves project
+ *
  *****************************************************************************/
 
 #include <Arduino.h>
@@ -28,29 +32,53 @@
 #include "LearnModeHandler.h"
 #include "AsnLMsg.h"
 
-#define VERSION "0.0.9"
-
+#define VERSION "1.0.0"
 #define ONBOARD_LED 13
 
+// leds are the red/green LEDs connected at each sensor. The arguments
+// of the LED constructors represent the Arduino pins where the leds are
+// connected. The program is made for common anode LEDs (connect the anode
+// to 5V and the cathodes, through a resistor, to the arduino pins).
 LED leds[NB_OF_QUESTIONS] = {
-    LED(23,24),
-    LED(33,34),
-    LED(43,44)
+    LED(23,24), // connect the 1st LED to the pins 23 (red) and 24 (green)
+    LED(33,34), // connect the 2nd LED to the pins 33 (red) and 34 (green)
+    LED(43,44)  // connect the 3rd LED to the pins 43 (red) and 44 (green)
 };
 
+// The RGB status LED (common anode) is connected to the pins 2 (red),
+// 3 (green) and 4 (blue). Connect the anode to 5V and the cathodes,
+// through a resistor, to the arduino pins
+#define STATUS_LED_R 2
+#define STATUS_LED_G 3
+#define STATUS_LED_B 4
+
+// sensors are the RFID sensors. The first argument of the RFIDSensor
+// constructor represents the number of the sensor. The second argument
+// represents the pin used for the chip select (SDA). The last argument
+// represent the pin used for the reset.
+// On the MFRC522 module, connect all GND together and th the ground (0V);
+// connect all 3.3V pins the the 3.3V pin of the arduino; connect all SCK
+// pins to the pin 52 of the arduino mega; connect all MOSI pins to the
+// pin 51 of the arduino mega; connect all MISO pins to the pin 50 of the
+// arduino mega; connect all RST to the pin 53 of the arduino mega. Note
+// that the pin IRQ is not connected.
 RFIDSensor sensors[NB_OF_QUESTIONS] = {
-    RFIDSensor(0, 22, 53),
-    RFIDSensor(1, 32, 53),
-    RFIDSensor(2, 42, 53)
+    RFIDSensor(0, 22, 53), // connect the SDA of the 1st sensor to pin 22
+    RFIDSensor(1, 32, 53), // connect the SDA of the 2nd sensor to pin 32
+    RFIDSensor(2, 42, 53)  // connect the SDA of the 3rd sensor to pin 42
 };
 
+// solenoids are activates through a relay. The constructor assigns a pin
+// and ling the solenoid with the sensor and the led.
 Solenoid solenoids[NB_OF_QUESTIONS] = {
-    Solenoid(25, sensors[0], leds[0]),
-    Solenoid(35, sensors[1], leds[1]),
-    Solenoid(45, sensors[2], leds[2]),
+    Solenoid(25, sensors[0], leds[0]), // connect the 1st relay to the pins 25
+    Solenoid(35, sensors[1], leds[1]), // connect the 2nd relay to the pins 35
+    Solenoid(45, sensors[2], leds[2]), // connect the 3rd relay to the pins 45
 };
 
+// The IR Sensor for the remote controller is connected to the pin 11
 RemoteControl remoteCtrl(11);
+
 LearnModeHandler learnModeHandler(remoteCtrl, sensors);
 
 void checkSolenoids() {
@@ -84,6 +112,7 @@ void checkRFIDSensors() {
             }
         }
         while(1) {
+            // error, so blink the status LED forever
             app.statusLed.setColor(COLOR_RED);
             delay(100);
             app.statusLed.off();
@@ -101,7 +130,7 @@ void setup() {
     Serial << "Volves version " << VERSION << endl;
     Serial << "Copyright (c) 2016 BlueMasters Fribourg" << endl;
     SPI.begin();
-    app.statusLed.begin(2,3,4);
+    app.statusLed.begin(STATUS_LED_R, STATUS_LED_G, STATUS_LED_B);
     remoteCtrl.begin();
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         leds[i].begin();
