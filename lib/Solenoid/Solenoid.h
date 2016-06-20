@@ -24,7 +24,7 @@
 
 class Solenoid : public StateMachine {
 public:
-    Solenoid(int impulsePin, RFIDSensor &sensor, LED led) :
+    Solenoid(int impulsePin, RFIDSensor &sensor, LED &led) :
         _impulsePin(impulsePin), _sensor(sensor), _led(led) {};
     void begin();
     void on();
@@ -43,13 +43,12 @@ private:
     };
     int _impulsePin;
     RFIDSensor &_sensor;
-    LED _led;
+    LED &_led;
     solenoidState _state;
     enum rfidSensorStatus _sensorState;
     long _timestamp;
     void fire(long t);
     void release(long t);
-
 
 };
 
