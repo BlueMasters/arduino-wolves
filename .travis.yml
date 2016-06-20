@@ -36,7 +36,7 @@ install:
     - platformio lib install 4
     - platformio lib install 63
     - platformio lib install 560
-    - git clone https://github.com/BlueMasters/AsnL.git ~/.platformio/lib/Asnl
+    - platformio lib install 326
 script:
     - platformio run
 
