@@ -18,22 +18,33 @@
 #define LED__H
 
 #include <Arduino.h>
+#include "StateMachine.h"
 
-class LED {
+class LED : public StateMachine {
 
 public:
     LED() {};
-    LED(int redPin, int greenPin) : _redPin(redPin), _greenPin(greenPin) {};
+    LED(int id, int redPin, int greenPin, int bluePin) :
+        _id(id), _redPin(redPin), _greenPin(greenPin), _bluePin(bluePin) {};
     void begin();
-    void begin(int redPin, int greenPin);
+    void begin(int id, int redPin, int greenPin, int bluePin);
+    void tick();
     void off();
     void red();
     void green();
+    void white();
+
+    void idle();
+    bool isIdle();
 
 private:
+    int _id;
     int _redPin;
     int _greenPin;
-};
+    int _bluePin;
+    bool _idle;
+    static int _idleCount;
 
+};
 
 #endif

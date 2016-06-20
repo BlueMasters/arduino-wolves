@@ -76,7 +76,7 @@ void Solenoid::tick() {
             _sensorState = NO_CARD;
         } else { // Idle and no reason to change.
             off();
-            _led.off();
+            _led.idle();
         }
         break;
 

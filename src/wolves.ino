@@ -40,9 +40,9 @@
 // connected. The program is made for common anode LEDs (connect the anode
 // to 5V and the cathodes, through a resistor, to the arduino pins).
 LED leds[NB_OF_QUESTIONS] = {
-    LED(23,24), // connect the 1st LED to the pins 23 (red) and 24 (green)
-    LED(33,34), // connect the 2nd LED to the pins 33 (red) and 34 (green)
-    LED(43,44)  // connect the 3rd LED to the pins 43 (red) and 44 (green)
+    LED(0, 23,24,25), // connect the 1st LED to the pins 23 (red) and 24 (green)
+    LED(1, 33,34,35), // connect the 2nd LED to the pins 33 (red) and 34 (green)
+    LED(2, 43,44,45)  // connect the 3rd LED to the pins 43 (red) and 44 (green)
 };
 
 // The RGB status LED (common anode) is connected to the pins 2 (red),
@@ -71,9 +71,9 @@ RFIDSensor sensors[NB_OF_QUESTIONS] = {
 // solenoids are activates through a relay. The constructor assigns a pin
 // and ling the solenoid with the sensor and the led.
 Solenoid solenoids[NB_OF_QUESTIONS] = {
-    Solenoid(25, sensors[0], leds[0]), // connect the 1st relay to the pins 25
-    Solenoid(35, sensors[1], leds[1]), // connect the 2nd relay to the pins 35
-    Solenoid(45, sensors[2], leds[2]), // connect the 3rd relay to the pins 45
+    Solenoid(26, sensors[0], leds[0]), // connect the 1st relay to the pins 25
+    Solenoid(36, sensors[1], leds[1]), // connect the 2nd relay to the pins 35
+    Solenoid(46, sensors[2], leds[2]), // connect the 3rd relay to the pins 45
 };
 
 // The IR Sensor for the remote controller is connected to the pin 11
@@ -113,7 +113,7 @@ void checkRFIDSensors() {
         }
         while(1) {
             // error, so blink the status LED forever
-            app.statusLed.setColor(COLOR_RED);
+            app.statusLed.setColor(STATUS_LED_RED);
             delay(100);
             app.statusLed.off();
             delay(100);
@@ -131,6 +131,7 @@ void setup() {
     Serial << "Copyright (c) 2016 BlueMasters Fribourg" << endl;
     SPI.begin();
     app.statusLed.begin(STATUS_LED_R, STATUS_LED_G, STATUS_LED_B);
+
     remoteCtrl.begin();
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         leds[i].begin();
@@ -140,7 +141,10 @@ void setup() {
     Serial << "Self-check running..." << endl;
     app.statusLed.selfCheck();
     checkSolenoids();
+    for (int i = 0; i < NB_OF_QUESTIONS; i++)
+        leds[i].idle();
     checkRFIDSensors();
+
     Serial << "Self-check OK." << endl << endl;
     app.loadApp();
     learnModeHandler.begin();
@@ -156,6 +160,14 @@ void loop() {
     }
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         solenoids[i].tick();
+    }
+    int idleCount = 0;
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
+        if (leds[i].isIdle()) idleCount++;
+    }
+    app.allIdle = (idleCount == NB_OF_QUESTIONS);
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
+        leds[i].tick();
     }
     learnModeHandler.tick();
     app.statusLed.tick();

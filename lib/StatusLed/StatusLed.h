@@ -17,13 +17,11 @@
 #ifndef STATUS_LED__H
 #define STATUS_LED__H
 
-#define COLOR_BLACK  0x000000
-#define COLOR_RED    0xFF0000
-#define COLOR_GREEN  0x00FF00
-#define COLOR_BLUE   0x0000FF
-#define COLOR_WHITE  0xFFFFFF
-
-
+#define STATUS_LED_BLACK  0x000000
+#define STATUS_LED_RED    0xFF0000
+#define STATUS_LED_GREEN  0x00FF00
+#define STATUS_LED_BLUE   0x0000FF
+#define STATUS_LED_WHITE  0xFFFFFF
 
 #include <Arduino.h>
 #include "StateMachine.h"

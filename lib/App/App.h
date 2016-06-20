@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
- 
+
 #ifndef APP__H
 #define APP__H
 
@@ -64,9 +64,10 @@ public:
     uint16_t DI; // Duration of Impuls (in ms)
     uint16_t DF; // Duration of Feedback (in ms)
     StatusLed statusLed;
+    bool allIdle; // true if all solenoids are idle
+
     void dump();
     void dumpConfig(struct wolvesConfig& config);
-
     void loadApp(); // Load pinCode, config, DI and DF. // TODO Take granularity into account.
     void saveDI(uint16_t DI);
     void saveDF(uint16_t DF);
@@ -75,6 +76,5 @@ public:
 };
 
 extern App app;
-
 
 #endif

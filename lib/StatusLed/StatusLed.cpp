@@ -22,13 +22,13 @@
 #endif
 
 #define HEARTBEAT_COUNTER  100
-#define HEARTBEAT_WIDTH      1
+#define HEARTBEAT_WIDTH    1
 #define COLOR_CHOOSE_CMD   0xFF7400 // orange
 #define COLOR_LEARN        0x3029D6 // bright blue
 #define COLOR_HEART_BEAT   0x000033 // dark blue
 
 void StatusLed::begin() {
-    setColor(COLOR_BLACK);
+    setColor(STATUS_LED_BLACK);
     pinMode(_redPin, OUTPUT);
     pinMode(_greenPin, OUTPUT);
     pinMode(_bluePin, OUTPUT);
@@ -52,15 +52,15 @@ void StatusLed::setColor(uint32_t color) {
 }
 
 void StatusLed::off() {
-    setColor(COLOR_BLACK);
+    setColor(STATUS_LED_BLACK);
 }
 
 int StatusLed::selfCheck() {
-    setColor(COLOR_RED);
+    setColor(STATUS_LED_RED);
     delay(1000);
-    setColor(COLOR_GREEN);
+    setColor(STATUS_LED_GREEN);
     delay(1000);
-    setColor(COLOR_BLUE);
+    setColor(STATUS_LED_BLUE);
     delay(1000);
     off();
     return 0;
@@ -78,7 +78,7 @@ void StatusLed::tick() {
     } else if (app.globalMode == globmode_NORMAL) {
         if (heartBeatLed) setColor(COLOR_HEART_BEAT); else off();
     } else {
-        if (heartBeatLed) setColor(COLOR_RED); else off();
+        if (heartBeatLed) setColor(STATUS_LED_RED); else off();
     }
 
 }
