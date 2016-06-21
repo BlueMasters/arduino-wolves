@@ -18,16 +18,20 @@
 #include "LED.h"
 #include "App.h"
 
-#define IDLE_WHITE_ON 100
-#define IDLE_WHITE_OFF 105
+#define IDLE_WHITE_ON 20
+#define IDLE_WHITE_OFF (IDLE_WHITE_ON + 2)
+
+#define LED_COLOR_IDLE1  0x333333
+#define LED_COLOR_IDLE2  0x000000
 
 int LED::_idleCount = 0;
 
 void LED::begin() {
-    off();
+    setColor(LED_COLOR_BLACK);
     pinMode(_redPin, OUTPUT);
     pinMode(_greenPin, OUTPUT);
     pinMode(_bluePin, OUTPUT);
+    _idle = true;
 }
 
 void LED::begin(int id, int redPin, int greenPin, int bluePin) {
@@ -42,54 +46,35 @@ void LED::begin(int id, int redPin, int greenPin, int bluePin) {
 void LED::tick() {
     if (app.allIdle) {
         if (_idleCount < IDLE_WHITE_ON) {
-            white();
-            _idleCount++;
+            setColor(LED_COLOR_IDLE1);
+            if (_id == NB_OF_QUESTIONS - 1) _idleCount++;
         } else if (_idleCount < IDLE_WHITE_OFF) {
-            off();
-            _idleCount++;
+            setColor(LED_COLOR_IDLE2);
+            if (_id == NB_OF_QUESTIONS - 1) _idleCount++;
         } else {
-            _idleCount = 0;
+            if (_id == NB_OF_QUESTIONS - 1) _idleCount = 0;
         }
     } else {
-        _idleCount = 0;
+        if (_id == NB_OF_QUESTIONS - 1) _idleCount = 0;
         if (_idle) {
-            off();
+            setColor(LED_COLOR_BLACK);
         }
     }
 }
 
-void LED::off() {
-    digitalWrite(_redPin, HIGH);
-    digitalWrite(_greenPin, HIGH);
-    digitalWrite(_bluePin, HIGH);
-    _idle = false;
+void LED::setColor(uint32_t color) {
+    int r = (color >> 16) & 0xFF;
+    int g = (color >>  8) & 0xFF;
+    int b = (color >>  0) & 0xFF;
+    analogWrite(_redPin,   255-r);
+    analogWrite(_greenPin, 255-g);
+    analogWrite(_bluePin,  255-b);
 }
 
-void LED::idle() {
-    _idle = true;
+void LED::idle(bool idl) {
+    _idle = idl;
 }
 
 bool LED::isIdle() {
     return _idle;
-}
-
-void LED::green() {
-    digitalWrite(_redPin, HIGH);
-    digitalWrite(_greenPin, LOW);
-    digitalWrite(_bluePin, HIGH);
-    _idle = false;
-}
-
-void LED::red() {
-    digitalWrite(_greenPin, HIGH);
-    digitalWrite(_redPin, LOW);
-    digitalWrite(_bluePin, HIGH);
-    _idle = false;
-}
-
-void LED::white() {
-    digitalWrite(_greenPin, LOW);
-    digitalWrite(_redPin, LOW);
-    digitalWrite(_bluePin, LOW);
-    _idle = false;
 }

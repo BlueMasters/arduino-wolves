@@ -20,6 +20,12 @@
 #include <Arduino.h>
 #include "StateMachine.h"
 
+#define LED_COLOR_BLACK  0x000000
+#define LED_COLOR_RED    0xFF0000
+#define LED_COLOR_GREEN  0x00FF00
+#define LED_COLOR_WHITE  0xFFFFFF
+#define LED_COLOR_ORANGE 0xFF6600
+
 class LED : public StateMachine {
 
 public:
@@ -29,12 +35,9 @@ public:
     void begin();
     void begin(int id, int redPin, int greenPin, int bluePin);
     void tick();
-    void off();
-    void red();
-    void green();
-    void white();
+    void setColor (uint32_t color);
 
-    void idle();
+    void idle(bool idl);
     bool isIdle();
 
 private:

@@ -47,6 +47,8 @@ private:
     solenoidState _state;
     enum rfidSensorStatus _sensorState;
     long _timestamp;
+    long _delay;
+
     void fire(long t);
     void release(long t);
 

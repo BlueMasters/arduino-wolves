@@ -32,25 +32,30 @@
 #include "LearnModeHandler.h"
 #include "AsnLMsg.h"
 
-#define VERSION "1.0.0"
+#define VERSION "1.1.2"
 #define ONBOARD_LED 13
+
+/***************************************************************************
+ * CAVEAT: The librairie RemoteControl uses the Timer2. So pins 9 and 10
+ * are not available for PWM
+ ***************************************************************************/
 
 // leds are the red/green LEDs connected at each sensor. The arguments
 // of the LED constructors represent the Arduino pins where the leds are
 // connected. The program is made for common anode LEDs (connect the anode
 // to 5V and the cathodes, through a resistor, to the arduino pins).
 LED leds[NB_OF_QUESTIONS] = {
-    LED(0, 23,24,25), // connect the 1st LED to the pins 23 (red) and 24 (green)
-    LED(1, 33,34,35), // connect the 2nd LED to the pins 33 (red) and 34 (green)
-    LED(2, 43,44,45)  // connect the 3rd LED to the pins 43 (red) and 44 (green)
+    LED(0,  5,  6,  7), // connect the LED0 to the pins  5,  6,  7 (RGB)
+    LED(1,  8, 45, 46), // connect the LED1 to the pins  8, 45, 46 (RGB)
+    LED(2, 11, 12, 44)  // connect the LED2 to the pins 11, 12, 44 (RGB)
 };
 
-// The RGB status LED (common anode) is connected to the pins 2 (red),
-// 3 (green) and 4 (blue). Connect the anode to 5V and the cathodes,
+// The RGB status LED (common anode) is connected to the pins 4 (red),
+// 3 (green) and 2 (blue). Connect the anode to 5V and the cathodes,
 // through a resistor, to the arduino pins
-#define STATUS_LED_R 2
+#define STATUS_LED_R 4
 #define STATUS_LED_G 3
-#define STATUS_LED_B 4
+#define STATUS_LED_B 2
 
 // sensors are the RFID sensors. The first argument of the RFIDSensor
 // constructor represents the number of the sensor. The second argument
@@ -71,13 +76,13 @@ RFIDSensor sensors[NB_OF_QUESTIONS] = {
 // solenoids are activates through a relay. The constructor assigns a pin
 // and ling the solenoid with the sensor and the led.
 Solenoid solenoids[NB_OF_QUESTIONS] = {
-    Solenoid(26, sensors[0], leds[0]), // connect the 1st relay to the pins 25
-    Solenoid(36, sensors[1], leds[1]), // connect the 2nd relay to the pins 35
-    Solenoid(46, sensors[2], leds[2]), // connect the 3rd relay to the pins 45
+    Solenoid(26, sensors[0], leds[0]), // connect the 1st relay to the pins 26
+    Solenoid(36, sensors[1], leds[1]), // connect the 2nd relay to the pins 36
+    Solenoid(47, sensors[2], leds[2]), // connect the 3rd relay to the pins 47
 };
 
-// The IR Sensor for the remote controller is connected to the pin 11
-RemoteControl remoteCtrl(11);
+// The IR Sensor for the remote controller is connected to the pin 40
+RemoteControl remoteCtrl(40);
 
 LearnModeHandler learnModeHandler(remoteCtrl, sensors);
 
@@ -106,9 +111,9 @@ void checkRFIDSensors() {
     if (countOk != NB_OF_QUESTIONS) {
         for (int i = 0; i < NB_OF_QUESTIONS; i++) {
             if (sensorOK[i]) {
-                leds[i].green();
+                leds[i].setColor(LED_COLOR_GREEN);
             } else {
-                leds[i].red();
+                leds[i].setColor(LED_COLOR_RED);
             }
         }
         while(1) {
@@ -127,8 +132,19 @@ void setup() {
     Serial.begin(9600);
     conf0Configure();
     digitalWrite(ONBOARD_LED, LOW);
-    Serial << "Volves version " << VERSION << endl;
-    Serial << "Copyright (c) 2016 BlueMasters Fribourg" << endl;
+    Serial << "Volves version " << VERSION << endl <<endl;
+    Serial << "**************************************************" << endl;
+    Serial << "* Copyright (c) 2016 BlueMasters Fribourg        *" << endl;
+    Serial << "*  - Lucy Linder                                 *" << endl;
+    Serial << "*  - Jacques Supcik                              *" << endl;
+    Serial << "**************************************************" << endl;
+    Serial << "* Made for : Musee d'histoire naturelle Fribourg *" << endl;
+    Serial << "* http://www.mhnf.ch/                            *" << endl;
+    Serial << "**************************************************" << endl;
+    Serial << "* The source code is available on github         *" << endl;
+    Serial << "* https://github.com/BlueMasters/arduino-wolves  *" << endl;
+    Serial << "**************************************************" << endl;
+    Serial << endl;
     SPI.begin();
     app.statusLed.begin(STATUS_LED_R, STATUS_LED_G, STATUS_LED_B);
 
@@ -142,7 +158,7 @@ void setup() {
     app.statusLed.selfCheck();
     checkSolenoids();
     for (int i = 0; i < NB_OF_QUESTIONS; i++)
-        leds[i].idle();
+        leds[i].idle(true);
     checkRFIDSensors();
 
     Serial << "Self-check OK." << endl << endl;

@@ -21,7 +21,7 @@
 #include <Stream.h>
 #endif
 
-#define HEARTBEAT_COUNTER  100
+#define HEARTBEAT_COUNTER  64 // about 5 seconds with current setup
 #define HEARTBEAT_WIDTH    1
 #define COLOR_CHOOSE_CMD   0xFF7400 // orange
 #define COLOR_LEARN        0x3029D6 // bright blue
@@ -43,9 +43,9 @@ void StatusLed::begin(int redPin, int greenPin, int bluePin) {
 }
 
 void StatusLed::setColor(uint32_t color) {
-    int r = (color >>  0) & 0xFF;
+    int r = (color >> 16) & 0xFF;
     int g = (color >>  8) & 0xFF;
-    int b = (color >> 16) & 0xFF;
+    int b = (color >>  0) & 0xFF;
     analogWrite(_redPin,   255-r);
     analogWrite(_greenPin, 255-g);
     analogWrite(_bluePin,  255-b);

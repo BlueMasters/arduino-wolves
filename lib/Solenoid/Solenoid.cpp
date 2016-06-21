@@ -20,6 +20,7 @@
 
 // Give time for the disk to fall out of the RFID sensor field
 #define SOLENOID_WAITING_TIME 1000 // msec
+#define EMERGENCY_OPEN 5000 // msec
 
 void Solenoid::begin() {
     off();
@@ -44,7 +45,7 @@ void Solenoid::fire(long t) {
 void Solenoid::release(long t) {
     _timestamp = t;
     off();
-    _led.off();
+    _led.setColor(LED_COLOR_BLACK);
 }
 
 void Solenoid::tick() {
@@ -62,34 +63,39 @@ void Solenoid::tick() {
     case SOLENOID_IDLE:
         if (app.emergency) {
             fire(now);
+            _delay = EMERGENCY_OPEN;
             _state = SOLENOID_FIRED;
-            _led.green();
+            _led.setColor(LED_COLOR_ORANGE);
+            _led.idle(false);
         } else if (_sensorState == VALID_CARD) {
-            _led.green();
+            _led.setColor(LED_COLOR_GREEN);
+            _led.idle(false);
             _timestamp = now;
             _state = SOLENOID_FROZEN;
             _sensorState = NO_CARD;
         } else if (_sensorState == INVALID_CARD) {
-            _led.red();
+            _led.setColor(LED_COLOR_RED);
+            _led.idle(false);
             _timestamp = now;
             _state = SOLENOID_FROZEN;
             _sensorState = NO_CARD;
         } else { // Idle and no reason to change.
             off();
-            _led.idle();
+            _led.idle(true);
         }
         break;
 
     case SOLENOID_FROZEN:
         if (now - _timestamp > app.DF) {
             fire(now);
+            _delay = app.DI;
             _state = SOLENOID_FIRED;
             // I decided to not clear the LED here. It will stay
             // a little bit longer and will be cleared in the next state.
         } break;
 
     case SOLENOID_FIRED:
-        if (now - _timestamp > app.DI) {
+        if (now - _timestamp > _delay) {
             release(now);
             _state = SOLENOID_WAITING;
         } break;
@@ -107,20 +113,20 @@ void Solenoid::tick() {
 };
 
 int Solenoid::selfCheck0() {
-    _led.red();
+    _led.setColor(LED_COLOR_RED);
     on();
     delay(200);
     return 0;
 }
 
 int Solenoid::selfCheck1() {
-    _led.green();
+    _led.setColor(LED_COLOR_GREEN);
     off();
     delay(200);
     return 0;
 }
 
 int Solenoid::selfCheck2() {
-    _led.off();
+    _led.setColor(LED_COLOR_BLACK);
     return 0;
 }
