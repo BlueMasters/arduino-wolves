@@ -67,16 +67,11 @@ void Solenoid::tick() {
             fire(now);
             _delay = EMERGENCY_OPEN;
             _state = SOLENOID_FIRED;
-        } else if (_currentAnswer == TRUE) {
+        } else if (_sensor.currentAnswer() != UNDEFINED) {
             app.activeCount++;
             _timestamp = now;
             _state = SOLENOID_FROZEN;
-            _currentAnswer = FALSE;
-        } else if (_currentAnswer == FALSE) {
-            app.activeCount++;
-            _timestamp = now;
-            _state = SOLENOID_FROZEN;
-            _currentAnswer = UNDEFINED;
+            _currentAnswer = _sensor.currentAnswer();
         } else { // Idle and no reason to change.
             off();
         }
@@ -95,13 +90,13 @@ void Solenoid::tick() {
     case SOLENOID_FIRED:
         if (now - _timestamp > _delay) {
             release(now);
+            _currentAnswer = UNDEFINED;
             _state = SOLENOID_WAITING;
         } break;
 
     case SOLENOID_WAITING:
         if (now - _timestamp > SOLENOID_WAITING_TIME) {
             app.activeCount--;
-            _currentAnswer = UNDEFINED;
             _mutexSet = false;
             _state = SOLENOID_IDLE;
         } break;
