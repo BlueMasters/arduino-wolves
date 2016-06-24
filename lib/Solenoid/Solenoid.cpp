@@ -88,6 +88,10 @@ void Solenoid::tick() {
         } break;
 
     case SOLENOID_FIRED:
+        if(app.emergency){
+            if(!_mutexSet) _mutexSet = true;
+            else break;
+        }
         if (now - _timestamp > _delay) {
             release(now);
             _currentAnswer = UNDEFINED;
