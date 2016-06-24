@@ -19,13 +19,12 @@
 
 #include <Arduino.h>
 #include "StateMachine.h"
-#include "LED.h"
 #include "RFIDSensor.h"
 
 class Solenoid : public StateMachine {
 public:
-    Solenoid(int impulsePin, RFIDSensor &sensor, LED &led) :
-        _impulsePin(impulsePin), _sensor(sensor), _led(led) {};
+    Solenoid(int impulsePin, RFIDSensor &sensor) :
+        _impulsePin(impulsePin), _sensor(sensor){};
     void begin();
     void on();
     void off();
@@ -43,7 +42,6 @@ private:
     };
     int _impulsePin;
     RFIDSensor &_sensor;
-    LED &_led;
     solenoidState _state;
     enum rfidSensorStatus _sensorState;
     long _timestamp;

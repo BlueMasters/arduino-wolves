@@ -45,7 +45,6 @@ void Solenoid::fire(long t) {
 void Solenoid::release(long t) {
     _timestamp = t;
     off();
-    _led.setColor(LED_COLOR_BLACK);
 }
 
 void Solenoid::tick() {
@@ -62,26 +61,22 @@ void Solenoid::tick() {
     switch (_state) {
     case SOLENOID_IDLE:
         if (app.emergency) {
+            app.activeCount++;
             fire(now);
             _delay = EMERGENCY_OPEN;
             _state = SOLENOID_FIRED;
-            _led.setColor(LED_COLOR_ORANGE);
-            _led.idle(false);
         } else if (_sensorState == VALID_CARD) {
-            _led.setColor(LED_COLOR_GREEN);
-            _led.idle(false);
+            app.activeCount++;
             _timestamp = now;
             _state = SOLENOID_FROZEN;
             _sensorState = NO_CARD;
         } else if (_sensorState == INVALID_CARD) {
-            _led.setColor(LED_COLOR_RED);
-            _led.idle(false);
+            app.activeCount++;
             _timestamp = now;
             _state = SOLENOID_FROZEN;
             _sensorState = NO_CARD;
         } else { // Idle and no reason to change.
             off();
-            _led.idle(true);
         }
         break;
 
@@ -102,31 +97,24 @@ void Solenoid::tick() {
 
     case SOLENOID_WAITING:
         if (now - _timestamp > SOLENOID_WAITING_TIME) {
+            app.activeCount--;
             _state = SOLENOID_IDLE;
         } break;
-
-    default: {
-        _state = SOLENOID_IDLE;
-        break;
-    }
     }
 };
 
 int Solenoid::selfCheck0() {
-    _led.setColor(LED_COLOR_RED);
     on();
     delay(200);
     return 0;
 }
 
 int Solenoid::selfCheck1() {
-    _led.setColor(LED_COLOR_GREEN);
     off();
     delay(200);
     return 0;
 }
 
 int Solenoid::selfCheck2() {
-    _led.setColor(LED_COLOR_BLACK);
     return 0;
 }
