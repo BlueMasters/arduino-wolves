@@ -52,7 +52,7 @@ void Solenoid::release(long t) {
 void Solenoid::tick() {
     long now = millis();
     // Read sensor state
-    enum triState newSensorState = _sensor.rfidSensorStatus();
+    enum triState newSensorState = _sensor.currentAnswer();
     // If we have a card, so we save this in the _currentAnswer attribute.
     // We will receive this information only once, and it might arrive
     // during a "FROZEN" state, so we have to save it.
@@ -101,6 +101,7 @@ void Solenoid::tick() {
     case SOLENOID_WAITING:
         if (now - _timestamp > SOLENOID_WAITING_TIME) {
             app.activeCount--;
+            _currentAnswer = UNDEFINED;
             _mutexSet = false;
             _state = SOLENOID_IDLE;
         } break;
