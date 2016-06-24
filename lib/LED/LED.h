@@ -46,7 +46,7 @@ private:
     int _greenPin;
     int _bluePin;
     bool _idle;
-    static int _idleCount;
+    static unsigned _idleCount;
 
 };
 

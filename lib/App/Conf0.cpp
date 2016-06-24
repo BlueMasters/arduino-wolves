@@ -22,13 +22,18 @@
 #include "AsnLParser.h"
 #include <EEPROM.h>
 
-#define CONF0_MAGIC        0x900df00d
+#define CONF0_MAGIC        0x576D1D4E
 #define CONF0_EEPROM_START 0x0000
 
-#define CONF0_MAGIC_ADDR  (CONF0_EEPROM_START)
-#define CONF0_PIN_ADDR    (CONF0_EEPROM_START + 4)
-#define CONF0_DF_ADDR     (CONF0_EEPROM_START + 28)
-#define CONF0_DI_ADDR     (CONF0_EEPROM_START + 30)
+#define CONF0_MAGIC_ADDR               (CONF0_EEPROM_START)         // uint32
+#define CONF0_PIN_ADDR                 (CONF0_EEPROM_START + 4)     // String
+#define CONF0_DF_ADDR                  (CONF0_EEPROM_START + 28)    // uint16
+#define CONF0_DI_ADDR                  (CONF0_EEPROM_START + 30)    // uint16
+
+#define CONF0_IDLE_COLOR_ON_ADDR       (CONF0_EEPROM_START + 32)    // uint32
+#define CONF0_IDLE_COLOR_OFF_ADDR      (CONF0_EEPROM_START + 36)    // uint32
+#define CONF0_IDLE_TIME_ON_ADDR        (CONF0_EEPROM_START + 40)    // uint16
+#define CONF0_IDLE_TIME_OFF_ADDR       (CONF0_EEPROM_START + 42)    // uint16
 
 #define CONF0_MAX_PIN_LEN (CONF0_DF_ADDR - CONF0_PIN_ADDR - 1)
 
@@ -50,8 +55,12 @@ int conf0ReadEEPROM() {
         }
         buffer[i] = '\x00';
         app.pinCode = String(buffer);
-        EEPROM.get(CONF0_DF_ADDR + 28, app.DF);
-        EEPROM.get(CONF0_DI_ADDR + 30, app.DI);
+        EEPROM.get(CONF0_DF_ADDR, app.DF);
+        EEPROM.get(CONF0_DI_ADDR, app.DI);
+        EEPROM.get(CONF0_IDLE_COLOR_ON_ADDR, app.idleColorOn);
+        EEPROM.get(CONF0_IDLE_COLOR_OFF_ADDR, app.idleColorOff);
+        EEPROM.get(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOn);
+        EEPROM.get(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOff);
         return 0;
     } else {
         return -1;
@@ -72,8 +81,12 @@ int conf0WriteEEPROM() {
         i++;
     }
     EEPROM[CONF0_PIN_ADDR + i] = 0;
-    EEPROM.put(CONF0_DF_ADDR + 28, app.DF);
-    EEPROM.put(CONF0_DI_ADDR + 30, app.DI);
+    EEPROM.put(CONF0_DF_ADDR, app.DF);
+    EEPROM.put(CONF0_DI_ADDR, app.DI);
+    EEPROM.put(CONF0_IDLE_COLOR_ON_ADDR, app.idleColorOn);
+    EEPROM.put(CONF0_IDLE_COLOR_OFF_ADDR, app.idleColorOff);
+    EEPROM.put(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOn);
+    EEPROM.put(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOff);
     return 0;
 }
 
@@ -121,6 +134,10 @@ void dumpVars(AsnLParser& p, AsnLWriter& w) {
     w.string(app.pinCode);
     w.integer(2, app.DF);
     w.integer(2, app.DI);
+    w.integer(4, app.idleColorOn);
+    w.integer(4, app.idleColorOff);
+    w.integer(2, app.idleTicksOn);
+    w.integer(2, app.idleTicksOff);
     w.endStructure();
     w.endStructure();
 
@@ -148,43 +165,42 @@ static void setPinCode(AsnLParser& p, AsnLWriter& w) {
     result(p, w, 1);
 }
 
-static void setDF(AsnLParser& p, AsnLWriter& w) {
+static int16_t extractInt16(AsnLParser& p, AsnLWriter& w) {
     int16_t value;
     if (checkToken(p, ASNL_INT)) {
         if (p.readInt(&value) != 0) {
-            result(p, w, 0); return; // failed to read int
+            result(p, w, 0); return -1; // failed to read int
         }
     } else {
-        result(p, w, 0); return; // not an int
+        result(p, w, 0); return -1; // not an int
     }
     if (!checkToken(p, ASNL_END_STRUCT)) {
-        result(p, w, 0); return;
+        result(p, w, 0); return -1;
     }
     if (!checkToken(p, ASNL_NIL)) {
-        result(p, w, 0); return;
+        result(p, w, 0); return -1;
     }
-    app.DF = value;
     result(p, w, 1);
+    return value;
 }
 
-static void setDI(AsnLParser& p, AsnLWriter& w) {
-    int16_t value;
+static int32_t extractInt32(AsnLParser& p, AsnLWriter& w) {
+    int32_t value;
     if (checkToken(p, ASNL_INT)) {
         if (p.readInt(&value) != 0) {
-            result(p, w, 0); return; // failed to read int
-
+            result(p, w, 0); return -1; // failed to read int
         }
     } else {
-        result(p, w, 0); return; // not an int
+        result(p, w, 0); return -1; // not an int
     }
     if (!checkToken(p, ASNL_END_STRUCT)) {
-        result(p, w, 0); return;
+        result(p, w, 0); return -1;
     }
     if (!checkToken(p, ASNL_NIL)) {
-        result(p, w, 0); return;
+        result(p, w, 0); return -1;
     }
-    app.DI = value;
     result(p, w, 1);
+    return value;
 }
 
 static void save(AsnLParser& p, AsnLWriter& w, bool dirty) {
@@ -216,8 +232,12 @@ static void conf0Dialog() {
         switch (command) {
         case 'd': dumpVars(p, w); break;
         case 'p': setPinCode(p, w); dirty = true; break;
-        case 'i': setDI(p, w); dirty = true; break;
-        case 'f': setDF(p, w); dirty = true; break;
+        case 'i': app.DI = extractInt16(p, w); dirty = true; break;
+        case 'f': app.DF = extractInt16(p, w); dirty = true; break;
+        case 'l': app.idleColorOn = extractInt32(p, w); dirty = true; break;
+        case 'm': app.idleColorOff = extractInt32(p, w); dirty = true; break;
+        case '1': app.idleTicksOn = extractInt16(p, w); dirty = true; break;
+        case '0': app.idleTicksOff = extractInt16(p, w); dirty = true; break;
         case 's': save(p, w, dirty); dirty = false; break;
         case 'x': result(p, w, 1); return; // exit
         default: result(p, w, 0); break; // invalid command
@@ -229,6 +249,10 @@ void conf0Configure() {
     app.pinCode = "000";
     app.DF = 2000;
     app.DI = 1000;
+    app.idleColorOn  = 0x333333;
+    app.idleColorOff = 0x000000;
+    app.idleTicksOn   = 20;
+    app.idleTicksOff  = 2;
     conf0ReadEEPROM();
     Serial.write(CONF0_ENQ);
     int res = conf0GetCharTimeout(CONF0_REACTION_TIME);

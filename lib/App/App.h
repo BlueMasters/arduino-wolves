@@ -63,14 +63,21 @@ public:
     struct wolvesConfig config;
     uint16_t DI; // Duration of Impuls (in ms)
     uint16_t DF; // Duration of Feedback (in ms)
+    uint32_t idleColorOn;
+    uint32_t idleColorOff;
+    uint16_t idleTicksOn;
+    uint16_t idleTicksOff;
     StatusLed statusLed;
+    uint32_t tickCount;
+    uint32_t now;
+
     bool allIdle; // true if all solenoids are idle
 
+    void begin();
+    void step();
     void dump();
     void dumpConfig(struct wolvesConfig& config);
     void loadApp(); // Load pinCode, config, DI and DF. // TODO Take granularity into account.
-    void saveDI(uint16_t DI);
-    void saveDF(uint16_t DF);
     void saveConfig(struct wolvesConfig& config);
 
 };

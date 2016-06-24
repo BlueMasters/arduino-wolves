@@ -18,13 +18,9 @@
 #include "LED.h"
 #include "App.h"
 
-#define IDLE_WHITE_ON 20
-#define IDLE_WHITE_OFF (IDLE_WHITE_ON + 2)
+#define PROTO
 
-#define LED_COLOR_IDLE1  0x333333
-#define LED_COLOR_IDLE2  0x000000
-
-int LED::_idleCount = 0;
+unsigned LED::_idleCount = 0;
 
 void LED::begin() {
     setColor(LED_COLOR_BLACK);
@@ -45,11 +41,11 @@ void LED::begin(int id, int redPin, int greenPin, int bluePin) {
 
 void LED::tick() {
     if (app.allIdle) {
-        if (_idleCount < IDLE_WHITE_ON) {
-            setColor(LED_COLOR_IDLE1);
+        if (_idleCount < app.idleTicksOn) {
+            setColor(app.idleColorOn);
             if (_id == NB_OF_QUESTIONS - 1) _idleCount++;
-        } else if (_idleCount < IDLE_WHITE_OFF) {
-            setColor(LED_COLOR_IDLE2);
+        } else if (_idleCount < (app.idleTicksOn + app.idleTicksOff)) {
+            setColor(app.idleColorOff);
             if (_id == NB_OF_QUESTIONS - 1) _idleCount++;
         } else {
             if (_id == NB_OF_QUESTIONS - 1) _idleCount = 0;
@@ -66,13 +62,19 @@ void LED::setColor(uint32_t color) {
     int r = (color >> 16) & 0xFF;
     int g = (color >>  8) & 0xFF;
     int b = (color >>  0) & 0xFF;
+    #ifdef PROTO
     analogWrite(_redPin,   255-r);
     analogWrite(_greenPin, 255-g);
     analogWrite(_bluePin,  255-b);
+    #else
+    analogWrite(_redPin,   r);
+    analogWrite(_greenPin, g);
+    analogWrite(_bluePin,  b);
+    #endif
 }
 
-void LED::idle(bool idl) {
-    _idle = idl;
+void LED::idle(bool idle) {
+    _idle = idle;
 }
 
 bool LED::isIdle() {

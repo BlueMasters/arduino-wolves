@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
- 
+
 #include <Streaming.h>
 #include <Arduino.h>
 #include <EEPROM.h>
@@ -166,8 +166,13 @@ void App::saveConfig(struct wolvesConfig &config){
 
 void App::dump(){
     Serial << "CONFIG" << endl;
-    Serial << " DF: " << app.DF << endl << " DI: " << app.DI << endl;
-    Serial << " pincode: " << app.pinCode << endl << endl;
+    Serial << " DF             : " << app.DF << endl;
+    Serial << " DI             : " << app.DI << endl;
+    Serial << " Idle color ON  : " << _HEX(app.idleColorOn)  << endl;
+    Serial << " Idle color OFF : " << _HEX(app.idleColorOff) << endl;
+    Serial << " Idle ticks ON  : " << _HEX(app.idleTicksOn)  << endl;
+    Serial << " Idle ticks OFF : " << _HEX(app.idleTicksOff) << endl;
+    Serial << " pincode        : " << app.pinCode            << endl << endl;
     app.dumpConfig(app.config);
 }
 
@@ -190,18 +195,4 @@ void App::dumpConfig(struct wolvesConfig& config){
     }
     Serial << endl;
 
-
-}
-
-// TODO: keep those methods anyway ?
-void App::saveDF(uint16_t DF){
-        EEPROM.write(EEPROM_ADDR_MUTEX, 1);
-        EEPROM.put(EEPROM_ADDR_DF, DF);
-        EEPROM.write(EEPROM_ADDR_MUTEX, 0);
-}
-
-void App::saveDI(uint16_t DI){
-        EEPROM.write(EEPROM_ADDR_MUTEX, 1);
-        EEPROM.put(EEPROM_ADDR_DI, DI);
-        EEPROM.write(EEPROM_ADDR_MUTEX, 0);
 }

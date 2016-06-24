@@ -18,6 +18,9 @@
  *
  *****************************************************************************/
 
+#define VERSION "1.1.3"
+#define ONBOARD_LED 13
+
 #include <Arduino.h>
 #include <Streaming.h>
 #include <EEPROM.h>
@@ -31,9 +34,6 @@
 #include "RemoteControl.h"
 #include "LearnModeHandler.h"
 #include "AsnLMsg.h"
-
-#define VERSION "1.1.2"
-#define ONBOARD_LED 13
 
 /***************************************************************************
  * CAVEAT: The librairie RemoteControl uses the Timer2. So pins 9 and 10
@@ -146,6 +146,8 @@ void setup() {
     Serial << "**************************************************" << endl;
     Serial << endl;
     SPI.begin();
+    app.begin();
+    
     app.statusLed.begin(STATUS_LED_R, STATUS_LED_G, STATUS_LED_B);
 
     remoteCtrl.begin();
@@ -154,7 +156,7 @@ void setup() {
         solenoids[i].begin();
         sensors[i].begin();
     }
-    Serial << "Self-check running..." << endl;
+    Serial << "Running self-checks..." << endl;
     app.statusLed.selfCheck();
     checkSolenoids();
     for (int i = 0; i < NB_OF_QUESTIONS; i++)
@@ -170,6 +172,7 @@ void setup() {
 }
 
 void loop() {
+    app.step();
     remoteCtrl.tick();
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         sensors[i].tick();
