@@ -40,6 +40,7 @@ private:
         SOLENOID_FIRED,
         SOLENOID_WAITING
     };
+    static bool _mutexSet;
     int _impulsePin;
     RFIDSensor &_sensor;
     solenoidState _state;

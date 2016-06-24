@@ -22,6 +22,8 @@
 #define SOLENOID_WAITING_TIME 1000 // msec
 #define EMERGENCY_OPEN 5000 // msec
 
+bool Solenoid::_mutexSet = 0;
+
 void Solenoid::begin() {
     off();
     pinMode(_impulsePin, OUTPUT);
@@ -81,7 +83,8 @@ void Solenoid::tick() {
         break;
 
     case SOLENOID_FROZEN:
-        if (now - _timestamp > app.DF) {
+        if (now - _timestamp > app.DF && !_mutexSet) {
+            _mutexSet = true;
             fire(now);
             _delay = app.DI;
             _state = SOLENOID_FIRED;
@@ -98,6 +101,7 @@ void Solenoid::tick() {
     case SOLENOID_WAITING:
         if (now - _timestamp > SOLENOID_WAITING_TIME) {
             app.activeCount--;
+            _mutexSet = false;
             _state = SOLENOID_IDLE;
         } break;
     }
