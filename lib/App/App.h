@@ -56,7 +56,7 @@ enum globalMode {globmode_NORMAL, globmode_LEARN };
 
 class App {
 public:
-    App() : globalMode(globmode_NORMAL), emergency(false) {};
+    App() : globalMode(globmode_NORMAL), now(millis()) {};
     String pinCode;
     enum globalMode globalMode;
     bool emergency;
@@ -70,10 +70,8 @@ public:
     StatusLed statusLed;
     uint32_t tickCount;
     uint32_t now;
+    uint8_t activeCount;
 
-    bool allIdle; // true if all solenoids are idle
-
-    void begin();
     void step();
     void dump();
     void dumpConfig(struct wolvesConfig& config);

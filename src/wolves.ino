@@ -146,8 +146,8 @@ void setup() {
     Serial << "**************************************************" << endl;
     Serial << endl;
     SPI.begin();
-    app.begin();
-    
+    // app.begin();
+
     app.statusLed.begin(STATUS_LED_R, STATUS_LED_G, STATUS_LED_B);
 
     remoteCtrl.begin();
@@ -172,7 +172,7 @@ void setup() {
 }
 
 void loop() {
-    app.step();
+    //app.step();
     remoteCtrl.tick();
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         sensors[i].tick();
