@@ -28,7 +28,7 @@ void Solenoid::begin() {
     off();
     pinMode(_impulsePin, OUTPUT);
     _state = SOLENOID_IDLE;
-    _sensorState = NO_CARD;
+    _currentAnswer = UNDEFINED;
 }
 
 void Solenoid::on() {
@@ -52,12 +52,12 @@ void Solenoid::release(long t) {
 void Solenoid::tick() {
     long now = millis();
     // Read sensor state
-    enum rfidSensorStatus newSensorState = _sensor.rfidSensorStatus();
-    // If we have a card, so we save this in the _sensorState attribute.
+    enum triState newSensorState = _sensor.rfidSensorStatus();
+    // If we have a card, so we save this in the _currentAnswer attribute.
     // We will receive this information only once, and it might arrive
     // during a "FROZEN" state, so we have to save it.
-    if (newSensorState == VALID_CARD || newSensorState == INVALID_CARD) {
-        _sensorState = newSensorState;
+    if (newSensorState == TRUE || newSensorState == FALSE) {
+        _currentAnswer = newSensorState;
     }
 
     switch (_state) {
@@ -67,16 +67,16 @@ void Solenoid::tick() {
             fire(now);
             _delay = EMERGENCY_OPEN;
             _state = SOLENOID_FIRED;
-        } else if (_sensorState == VALID_CARD) {
+        } else if (_currentAnswer == TRUE) {
             app.activeCount++;
             _timestamp = now;
             _state = SOLENOID_FROZEN;
-            _sensorState = NO_CARD;
-        } else if (_sensorState == INVALID_CARD) {
+            _currentAnswer = FALSE;
+        } else if (_currentAnswer == FALSE) {
             app.activeCount++;
             _timestamp = now;
             _state = SOLENOID_FROZEN;
-            _sensorState = NO_CARD;
+            _currentAnswer = UNDEFINED;
         } else { // Idle and no reason to change.
             off();
         }
@@ -121,4 +121,8 @@ int Solenoid::selfCheck1() {
 
 int Solenoid::selfCheck2() {
     return 0;
+}
+
+enum triState Solenoid::currentAnswer(){
+    return _currentAnswer;
 }

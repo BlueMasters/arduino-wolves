@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
- 
+
 #ifndef RFIDSENSOR__H
 #define RFIDSENSOR__H
 
 #include <Arduino.h>
+#include "App.h"
 #include "StateMachine.h"
 #include "RFIDUid.h"
 #include <MFRC522.h>
-
-enum rfidSensorStatus { NO_CARD, INVALID_CARD, VALID_CARD };
 
 class RFIDSensor : public StateMachine {
 public:
     RFIDSensor(int id) : _id(id) {};
     RFIDSensor(int id, int csPin, int resetPin) :
-        _id(id), _status(NO_CARD), _mfrc522(csPin, resetPin) {};
+        _id(id), _answer(UNDEFINED), _mfrc522(csPin, resetPin) {};
 
     struct rfidUid cardId();
-    enum rfidSensorStatus rfidSensorStatus();
+    enum triState currentAnswer();
     void begin();
     void begin(int csPin, int resetPin);
     bool selfCheck();
@@ -42,7 +41,7 @@ public:
 
 private:
     int _id;
-    enum rfidSensorStatus _status;
+    enum triState _answer;
     MFRC522 _mfrc522;
     struct rfidUid _cardId;
 

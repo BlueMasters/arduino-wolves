@@ -32,6 +32,8 @@ public:
     int selfCheck0();
     int selfCheck1();
     int selfCheck2();
+    enum triState currentAnswer();
+
 
 private:
     enum solenoidState {
@@ -44,7 +46,7 @@ private:
     int _impulsePin;
     RFIDSensor &_sensor;
     solenoidState _state;
-    enum rfidSensorStatus _sensorState;
+    enum triState _currentAnswer;
     long _timestamp;
     long _delay;
 

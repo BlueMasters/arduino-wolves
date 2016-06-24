@@ -31,6 +31,7 @@
 #define MAX_CARDS 32
 #define MAX_GOOD_ANSWERS 32
 
+enum triState { FALSE, TRUE, UNDEFINED };
 
 struct wolvesConfigCards {
     byte len;

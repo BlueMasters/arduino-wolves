@@ -43,14 +43,14 @@ bool RFIDSensor::selfCheck(){
 
 void RFIDSensor::tick() {
     // always reinitialise the status
-    _status = NO_CARD;
+    _answer = UNDEFINED;
     if(_mfrc522.PICC_IsNewCardPresent() && _mfrc522.PICC_ReadCardSerial()) {
         // card detected
         _cardId.set(_mfrc522.uid.size, _mfrc522.uid.uidByte);
         validateNewCard();
 
         #ifdef APP_DEBUG
-        Serial << "RFID " << _id << ": detected " << (_status == VALID_CARD ? "valid " : "invalid ");
+        Serial << "RFID " << _id << ": detected " << (_answer == TRUE ? "valid " : "invalid ");
         _cardId.dump();
         #endif
 
@@ -68,16 +68,16 @@ void RFIDSensor::validateNewCard(){
     for(int ans = 0; ans < question.len; ans++) {
         int idx = question.items[ans];
         if(_cardId.equals(&cards[idx])) {
-            _status = VALID_CARD;
+            _answer = TRUE;
             return;
         }
     }
 
-    _status = INVALID_CARD;
+    _answer = FALSE;
 }
 
-enum rfidSensorStatus RFIDSensor::rfidSensorStatus() {
-    return _status;
+enum triState RFIDSensor::currentAnswer() {
+    return _answer;
 }
 
 struct rfidUid RFIDSensor::cardId(){
