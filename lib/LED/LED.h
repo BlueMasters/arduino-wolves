@@ -19,6 +19,7 @@
 
 #include <Arduino.h>
 #include "StateMachine.h"
+#include "Solenoid.h"
 
 #define LED_COLOR_BLACK  0x000000
 #define LED_COLOR_RED    0xFF0000
@@ -29,24 +30,18 @@
 class LED : public StateMachine {
 
 public:
-    LED() {};
-    LED(int id, int redPin, int greenPin, int bluePin) :
-        _id(id), _redPin(redPin), _greenPin(greenPin), _bluePin(bluePin) {};
+    LED(int redPin, int greenPin, int bluePin, Solenoid& solenoid) :
+        _redPin(redPin), _greenPin(greenPin), _bluePin(bluePin), _solenoid(solenoid) {};
     void begin();
-    void begin(int id, int redPin, int greenPin, int bluePin);
     void tick();
     void setColor (uint32_t color);
 
-    void idle(bool idl);
-    bool isIdle();
-
 private:
-    int _id;
     int _redPin;
     int _greenPin;
     int _bluePin;
-    bool _idle;
-    static unsigned _idleCount;
+    uint32_t _blinkCycleOrigin;
+    Solenoid& _solenoid;
 
 };
 

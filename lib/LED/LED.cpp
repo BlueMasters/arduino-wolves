@@ -17,45 +17,44 @@
 #include <Arduino.h>
 #include "LED.h"
 #include "App.h"
+#include "Solenoid.h"
 
 #define PROTO
-
-unsigned LED::_idleCount = 0;
 
 void LED::begin() {
     setColor(LED_COLOR_BLACK);
     pinMode(_redPin, OUTPUT);
     pinMode(_greenPin, OUTPUT);
     pinMode(_bluePin, OUTPUT);
-    _idle = true;
-}
-
-void LED::begin(int id, int redPin, int greenPin, int bluePin) {
-    _id = id;
-    _redPin = redPin;
-    _greenPin = greenPin;
-    _bluePin = bluePin;
-    _idle = true;
-    begin();
 }
 
 void LED::tick() {
-    if (app.allIdle) {
-        if (_idleCount < app.idleTicksOn) {
+    if (app.activeCount == 0) {
+        if (app.tickCount - _blinkCycleOrigin < app.idleTicksOn) {
             setColor(app.idleColorOn);
-            if (_id == NB_OF_QUESTIONS - 1) _idleCount++;
-        } else if (_idleCount < (app.idleTicksOn + app.idleTicksOff)) {
+        } else if (app.tickCount - _blinkCycleOrigin < (app.idleTicksOn + app.idleTicksOff)) {
             setColor(app.idleColorOff);
-            if (_id == NB_OF_QUESTIONS - 1) _idleCount++;
         } else {
-            if (_id == NB_OF_QUESTIONS - 1) _idleCount = 0;
+            _blinkCycleOrigin = app.tickCount;
         }
     } else {
-        if (_id == NB_OF_QUESTIONS - 1) _idleCount = 0;
-        if (_idle) {
+        _blinkCycleOrigin = app.tickCount;
+        if (_solenoid.currentAnswer() == TRUE) {
+            if (app.globalMode == globmode_LEARN)
+                setColor(LED_COLOR_ORANGE);
+            else
+                setColor(LED_COLOR_GREEN);
+        } else if (_solenoid.currentAnswer() == FALSE) {
+            if (app.globalMode == globmode_LEARN)
+                setColor(LED_COLOR_ORANGE);
+            else
+                setColor(LED_COLOR_RED);
+        } else {
             setColor(LED_COLOR_BLACK);
         }
+
     }
+
 }
 
 void LED::setColor(uint32_t color) {
@@ -71,12 +70,4 @@ void LED::setColor(uint32_t color) {
     analogWrite(_greenPin, g);
     analogWrite(_bluePin,  b);
     #endif
-}
-
-void LED::idle(bool idle) {
-    _idle = idle;
-}
-
-bool LED::isIdle() {
-    return _idle;
 }

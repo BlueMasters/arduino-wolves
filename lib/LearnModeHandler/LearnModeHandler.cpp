@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
- 
+
 #include <Arduino.h>
 #include "LearnModeHandler.h"
 #include "RFIDUid.h"
@@ -53,7 +53,7 @@ void LearnModeHandler::tick(){
     }else{
         // still in learn mode, check for new RFID cards
         for (int i = 0; i < NB_OF_QUESTIONS; i++){
-            if(_sensors[i].rfidSensorStatus() != NO_CARD){
+            if(_sensors[i].currentAnswer() != UNDEFINED){
                 int idx = addCard(_sensors[i].cardId());
                 addAnswer(i, idx);
             }

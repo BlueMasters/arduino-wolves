@@ -40,16 +40,6 @@
  * are not available for PWM
  ***************************************************************************/
 
-// leds are the red/green LEDs connected at each sensor. The arguments
-// of the LED constructors represent the Arduino pins where the leds are
-// connected. The program is made for common anode LEDs (connect the anode
-// to 5V and the cathodes, through a resistor, to the arduino pins).
-LED leds[NB_OF_QUESTIONS] = {
-    LED(0,  5,  6,  7), // connect the LED0 to the pins  5,  6,  7 (RGB)
-    LED(1,  8, 45, 46), // connect the LED1 to the pins  8, 45, 46 (RGB)
-    LED(2, 11, 12, 44)  // connect the LED2 to the pins 11, 12, 44 (RGB)
-};
-
 // The RGB status LED (common anode) is connected to the pins 4 (red),
 // 3 (green) and 2 (blue). Connect the anode to 5V and the cathodes,
 // through a resistor, to the arduino pins
@@ -76,9 +66,19 @@ RFIDSensor sensors[NB_OF_QUESTIONS] = {
 // solenoids are activates through a relay. The constructor assigns a pin
 // and ling the solenoid with the sensor and the led.
 Solenoid solenoids[NB_OF_QUESTIONS] = {
-    Solenoid(26, sensors[0], leds[0]), // connect the 1st relay to the pins 26
-    Solenoid(36, sensors[1], leds[1]), // connect the 2nd relay to the pins 36
-    Solenoid(47, sensors[2], leds[2]), // connect the 3rd relay to the pins 47
+    Solenoid(26, sensors[0]), // connect the 1st relay to the pins 26
+    Solenoid(36, sensors[1]), // connect the 2nd relay to the pins 36
+    Solenoid(47, sensors[2]), // connect the 3rd relay to the pins 47
+};
+
+// leds are the red/green LEDs connected at each sensor. The arguments
+// of the LED constructors represent the Arduino pins where the leds are
+// connected. The program is made for common anode LEDs (connect the anode
+// to 5V and the cathodes, through a resistor, to the arduino pins).
+LED leds[NB_OF_QUESTIONS] = {
+    LED( 5,  6,  7, solenoids[0]), // connect the LED0 to the pins  5,  6,  7 (RGB)
+    LED( 8, 45, 46, solenoids[1]), // connect the LED1 to the pins  8, 45, 46 (RGB)
+    LED(11, 12, 44, solenoids[2])  // connect the LED2 to the pins 11, 12, 44 (RGB)
 };
 
 // The IR Sensor for the remote controller is connected to the pin 40
@@ -146,7 +146,6 @@ void setup() {
     Serial << "**************************************************" << endl;
     Serial << endl;
     SPI.begin();
-    // app.begin();
 
     app.statusLed.begin(STATUS_LED_R, STATUS_LED_G, STATUS_LED_B);
 
@@ -159,8 +158,6 @@ void setup() {
     Serial << "Running self-checks..." << endl;
     app.statusLed.selfCheck();
     checkSolenoids();
-    for (int i = 0; i < NB_OF_QUESTIONS; i++)
-        leds[i].idle(true);
     checkRFIDSensors();
 
     Serial << "Self-check OK." << endl << endl;
@@ -172,7 +169,7 @@ void setup() {
 }
 
 void loop() {
-    //app.step();
+    app.step();
     remoteCtrl.tick();
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         sensors[i].tick();
@@ -180,11 +177,6 @@ void loop() {
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         solenoids[i].tick();
     }
-    int idleCount = 0;
-    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
-        if (leds[i].isIdle()) idleCount++;
-    }
-    app.allIdle = (idleCount == NB_OF_QUESTIONS);
     for (int i = 0; i < NB_OF_QUESTIONS; i++) {
         leds[i].tick();
     }

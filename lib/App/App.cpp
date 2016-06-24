@@ -35,6 +35,11 @@ App app;
 #define EEPROM_ADDR_DI         (EEPROM_START_CONF+11)  // 2 bytes
 #define EEPROM_ADDR_NB_CHIPS   (EEPROM_START_CONF+13)  // 1 byte
 
+void App::step() {
+    now = millis();
+    tickCount++;
+}
+
 void App::loadApp() {
 
     // check MAGIC
