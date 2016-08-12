@@ -60,7 +60,7 @@ public:
     App() : globalMode(globmode_NORMAL), now(millis()) {};
     String pinCode;
     enum globalMode globalMode;
-    bool emergency;
+    int8_t emergency;
     struct wolvesConfig config;
     uint16_t DI; // Duration of Impuls (in ms)
     uint16_t DF; // Duration of Feedback (in ms)

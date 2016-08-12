@@ -43,9 +43,9 @@
 // The RGB status LED (common anode) is connected to the pins 4 (red),
 // 3 (green) and 2 (blue). Connect the anode to 5V and the cathodes,
 // through a resistor, to the arduino pins
-#define STATUS_LED_R 4
+#define STATUS_LED_R 2
 #define STATUS_LED_G 3
-#define STATUS_LED_B 2
+#define STATUS_LED_B 4
 
 // sensors are the RFID sensors. The first argument of the RFIDSensor
 // constructor represents the number of the sensor. The second argument
@@ -87,14 +87,19 @@ RemoteControl remoteCtrl(40);
 LearnModeHandler learnModeHandler(remoteCtrl, sensors);
 
 void checkSolenoids() {
-    for (int i = 0; i < NB_OF_QUESTIONS; i++)
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
+        leds[i].setColor(LED_COLOR_RED);
         solenoids[i].selfCheck0();
+    }
     delay(1000);
-    for (int i = 0; i < NB_OF_QUESTIONS; i++)
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
+        leds[i].setColor(LED_COLOR_GREEN);
         solenoids[i].selfCheck1();
+    }
     delay(1000);
-    for (int i = 0; i < NB_OF_QUESTIONS; i++)
-        solenoids[i].selfCheck2();
+    for (int i = 0; i < NB_OF_QUESTIONS; i++) {
+        leds[i].setColor(LED_COLOR_BLACK);
+    }
 }
 
 void checkRFIDSensors() {

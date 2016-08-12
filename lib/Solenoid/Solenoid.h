@@ -31,7 +31,6 @@ public:
     void tick();
     int selfCheck0();
     int selfCheck1();
-    int selfCheck2();
     enum triState currentAnswer();
 
 
@@ -46,9 +45,11 @@ private:
     int _impulsePin;
     RFIDSensor &_sensor;
     solenoidState _state;
+    bool _newAnswer;
     enum triState _currentAnswer;
-    long _timestamp;
-    long _delay;
+    uint32_t _timestamp;
+    uint32_t _delay;
+    bool _emergency;
 
     void fire(long t);
     void release(long t);

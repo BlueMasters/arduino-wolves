@@ -37,8 +37,7 @@ void RemoteControl::tick(){
         _pincode_idx = 0;
     }
 
-    // akways reset flage and key state
-    app.emergency = false;
+    // always reset key state
     _lastkey = IR_KEY_NONE;
 
     // read next key
@@ -56,8 +55,7 @@ void RemoteControl::tick(){
             #endif
 
             if(_lastkey == IR_KEY_POWER) {
-                // set the emergency flag for one cycle
-                app.emergency = true;
+                app.emergency = NB_OF_QUESTIONS;
 
             }else if(app.globalMode == globmode_NORMAL){
                 handlePinCode();

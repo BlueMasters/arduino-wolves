@@ -29,6 +29,7 @@ void Solenoid::begin() {
     pinMode(_impulsePin, OUTPUT);
     _state = SOLENOID_IDLE;
     _currentAnswer = UNDEFINED;
+    _newAnswer = false;
 }
 
 void Solenoid::on() {
@@ -50,59 +51,65 @@ void Solenoid::release(long t) {
 }
 
 void Solenoid::tick() {
-    long now = millis();
     // Read sensor state
     enum triState newSensorState = _sensor.currentAnswer();
-    // If we have a card, so we save this in the _currentAnswer attribute.
-    // We will receive this information only once, and it might arrive
-    // during a "FROZEN" state, so we have to save it.
+    // If we have a new card (state is not UNDEFINED), so we save the state in
+    // the _currentAnswer attribute. We will receive this information only
+    // once, and it might arrive during a "FROZEN" state, so we have to save
+    // it here.
     if (newSensorState == TRUE || newSensorState == FALSE) {
         _currentAnswer = newSensorState;
+        _newAnswer = true;
     }
 
     switch (_state) {
     case SOLENOID_IDLE:
-        if (app.emergency) {
+        if (app.emergency == NB_OF_QUESTIONS) {
             app.activeCount++;
-            fire(now);
             _delay = EMERGENCY_OPEN;
-            _state = SOLENOID_FIRED;
-        } else if (_sensor.currentAnswer() != UNDEFINED) {
-            app.activeCount++;
-            _timestamp = now;
             _state = SOLENOID_FROZEN;
-            _currentAnswer = _sensor.currentAnswer();
+            _emergency = true;
+        } else if (_newAnswer) {
+            app.activeCount++;
+            _timestamp = app.now;
+            _newAnswer = false;
+            _state = SOLENOID_FROZEN;
         } else { // Idle and no reason to change.
             off();
         }
         break;
 
     case SOLENOID_FROZEN:
-        if (now - _timestamp > app.DF && !_mutexSet) {
+        if ((app.now - _timestamp > app.DF || _emergency) && !_mutexSet) {
             _mutexSet = true;
-            fire(now);
-            _delay = app.DI;
+            fire(app.now);
+            _delay = _emergency ? EMERGENCY_OPEN : app.DI;
             _state = SOLENOID_FIRED;
             // I decided to not clear the LED here. It will stay
             // a little bit longer and will be cleared in the next state.
         } break;
 
     case SOLENOID_FIRED:
-        if(app.emergency){
-            if(!_mutexSet) _mutexSet = true;
-            else break;
-        }
-        if (now - _timestamp > _delay) {
-            release(now);
-            _currentAnswer = UNDEFINED;
+        if (app.now - _timestamp > _delay) {
+            release(app.now);
             _state = SOLENOID_WAITING;
         } break;
 
     case SOLENOID_WAITING:
-        if (now - _timestamp > SOLENOID_WAITING_TIME) {
-            app.activeCount--;
+        if (app.now - _timestamp > SOLENOID_WAITING_TIME) {
+            if (_emergency) {
+                _emergency = false;
+                app.emergency--;
+            }
             _mutexSet = false;
-            _state = SOLENOID_IDLE;
+            if (_newAnswer) {
+                _timestamp = app.now;
+                _newAnswer = false;
+                _state = SOLENOID_FROZEN;
+            } else {
+                app.activeCount--;
+                _state = SOLENOID_IDLE;
+            }
         } break;
     }
 };
@@ -119,10 +126,10 @@ int Solenoid::selfCheck1() {
     return 0;
 }
 
-int Solenoid::selfCheck2() {
-    return 0;
-}
-
 enum triState Solenoid::currentAnswer(){
-    return _currentAnswer;
+    if (_state == SOLENOID_FROZEN || _state == SOLENOID_FIRED || _newAnswer) {
+        return _currentAnswer;
+    } else {
+        return UNDEFINED;
+    }
 }

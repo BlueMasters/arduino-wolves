@@ -19,7 +19,7 @@
 #include "App.h"
 #include "Solenoid.h"
 
-#define PROTO
+#undef PROTO
 
 void LED::begin() {
     setColor(LED_COLOR_BLACK);
@@ -29,7 +29,9 @@ void LED::begin() {
 }
 
 void LED::tick() {
-    if (app.activeCount == 0) {
+    if (app.emergency > 0) {
+        setColor(LED_COLOR_ORANGE);
+    } else if (app.activeCount == 0) {
         if (app.tickCount - _blinkCycleOrigin < app.idleTicksOn) {
             setColor(app.idleColorOn);
         } else if (app.tickCount - _blinkCycleOrigin < (app.idleTicksOn + app.idleTicksOff)) {
@@ -52,9 +54,7 @@ void LED::tick() {
         } else {
             setColor(LED_COLOR_BLACK);
         }
-
     }
-
 }
 
 void LED::setColor(uint32_t color) {

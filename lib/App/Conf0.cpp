@@ -22,7 +22,7 @@
 #include "AsnLParser.h"
 #include <EEPROM.h>
 
-#define CONF0_MAGIC        0x576D1D4E
+#define CONF0_MAGIC        0x576D1D52
 #define CONF0_EEPROM_START 0x0000
 
 #define CONF0_MAGIC_ADDR               (CONF0_EEPROM_START)         // uint32
@@ -40,7 +40,7 @@
 #define CONF0_ENQ          '>'
 #define CONF0_ACK          '!'
 #define CONF0_REACTION_TIME 500
-#define CONF0_BUFFER_SIZE   32
+#define CONF0_BUFFER_SIZE   64
 
 int conf0ReadEEPROM() {
     uint32_t magic;
@@ -60,7 +60,7 @@ int conf0ReadEEPROM() {
         EEPROM.get(CONF0_IDLE_COLOR_ON_ADDR, app.idleColorOn);
         EEPROM.get(CONF0_IDLE_COLOR_OFF_ADDR, app.idleColorOff);
         EEPROM.get(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOn);
-        EEPROM.get(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOff);
+        EEPROM.get(CONF0_IDLE_TIME_OFF_ADDR, app.idleTicksOff);
         return 0;
     } else {
         return -1;
@@ -86,7 +86,7 @@ int conf0WriteEEPROM() {
     EEPROM.put(CONF0_IDLE_COLOR_ON_ADDR, app.idleColorOn);
     EEPROM.put(CONF0_IDLE_COLOR_OFF_ADDR, app.idleColorOff);
     EEPROM.put(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOn);
-    EEPROM.put(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOff);
+    EEPROM.put(CONF0_IDLE_TIME_OFF_ADDR, app.idleTicksOff);
     return 0;
 }
 
@@ -250,9 +250,9 @@ void conf0Configure() {
     app.DF = 2000;
     app.DI = 1000;
     app.idleColorOn  = 0x333333;
-    app.idleColorOff = 0x000000;
+    app.idleColorOff = 0x111111;
     app.idleTicksOn   = 20;
-    app.idleTicksOff  = 2;
+    app.idleTicksOff  = -1;
     conf0ReadEEPROM();
     Serial.write(CONF0_ENQ);
     int res = conf0GetCharTimeout(CONF0_REACTION_TIME);
