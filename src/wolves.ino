@@ -18,7 +18,7 @@
  *
  *****************************************************************************/
 
-#define VERSION "1.1.3"
+#define VERSION "1.1.3b"
 #define ONBOARD_LED 13
 
 #include <Arduino.h>
@@ -58,16 +58,20 @@
 // arduino mega; connect all RST to the pin 53 of the arduino mega. Note
 // that the pin IRQ is not connected.
 RFIDSensor sensors[NB_OF_QUESTIONS] = {
-    RFIDSensor(0, 22, 53), // connect the SDA of the 1st sensor to pin 22
-    RFIDSensor(1, 32, 53), // connect the SDA of the 2nd sensor to pin 32
+//  RFIDSensor(0, 22, 53), // connect the SDA of the 1st sensor to pin 22
+//  RFIDSensor(1, 32, 53), // connect the SDA of the 2nd sensor to pin 32
+    RFIDSensor(0, 32, 53), // connect the SDA of the 1st sensor to pin 32
+    RFIDSensor(1, 22, 53), // connect the SDA of the 2nd sensor to pin 22
     RFIDSensor(2, 42, 53)  // connect the SDA of the 3rd sensor to pin 42
 };
 
 // solenoids are activates through a relay. The constructor assigns a pin
 // and ling the solenoid with the sensor and the led.
 Solenoid solenoids[NB_OF_QUESTIONS] = {
-    Solenoid(26, sensors[0]), // connect the 1st relay to the pins 26
-    Solenoid(36, sensors[1]), // connect the 2nd relay to the pins 36
+//  Solenoid(26, sensors[0]), // connect the 1st relay to the pins 26
+//  Solenoid(36, sensors[1]), // connect the 2nd relay to the pins 36
+    Solenoid(36, sensors[0]), // connect the 1st relay to the pins 36
+    Solenoid(26, sensors[1]), // connect the 2nd relay to the pins 26
     Solenoid(47, sensors[2]), // connect the 3rd relay to the pins 47
 };
 
@@ -76,8 +80,10 @@ Solenoid solenoids[NB_OF_QUESTIONS] = {
 // connected. The program is made for common anode LEDs (connect the anode
 // to 5V and the cathodes, through a resistor, to the arduino pins).
 LED leds[NB_OF_QUESTIONS] = {
-    LED( 5,  6,  7, solenoids[0]), // connect the LED0 to the pins  5,  6,  7 (RGB)
-    LED( 8, 45, 46, solenoids[1]), // connect the LED1 to the pins  8, 45, 46 (RGB)
+//  LED( 5,  6,  7, solenoids[0]), // connect the LED0 to the pins  5,  6,  7 (RGB)
+//  LED( 8, 45, 46, solenoids[1]), // connect the LED1 to the pins  8, 45, 46 (RGB)
+    LED( 8, 45, 46, solenoids[0]), // connect the LED0 to the pins  8, 45, 46 (RGB)
+    LED( 5,  6,  7, solenoids[1]), // connect the LED1 to the pins  5,  6,  7 (RGB)
     LED(11, 12, 44, solenoids[2])  // connect the LED2 to the pins 11, 12, 44 (RGB)
 };
 
