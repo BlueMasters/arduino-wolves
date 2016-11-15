@@ -27,8 +27,8 @@
 
 #define CONF0_MAGIC_ADDR               (CONF0_EEPROM_START)         // uint32
 #define CONF0_PIN_ADDR                 (CONF0_EEPROM_START + 4)     // String
-#define CONF0_DF_ADDR                  (CONF0_EEPROM_START + 28)    // uint16
-#define CONF0_DI_ADDR                  (CONF0_EEPROM_START + 30)    // uint16
+#define CONF0_DI_ADDR                  (CONF0_EEPROM_START + 28)    // uint16
+#define CONF0_DF_ADDR                  (CONF0_EEPROM_START + 30)    // uint16
 
 #define CONF0_IDLE_COLOR_ON_ADDR       (CONF0_EEPROM_START + 32)    // uint32
 #define CONF0_IDLE_COLOR_OFF_ADDR      (CONF0_EEPROM_START + 36)    // uint32
@@ -55,8 +55,8 @@ int conf0ReadEEPROM() {
         }
         buffer[i] = '\x00';
         app.pinCode = String(buffer);
-        EEPROM.get(CONF0_DF_ADDR, app.DF);
         EEPROM.get(CONF0_DI_ADDR, app.DI);
+        EEPROM.get(CONF0_DF_ADDR, app.DF);
         EEPROM.get(CONF0_IDLE_COLOR_ON_ADDR, app.idleColorOn);
         EEPROM.get(CONF0_IDLE_COLOR_OFF_ADDR, app.idleColorOff);
         EEPROM.get(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOn);
@@ -81,8 +81,8 @@ int conf0WriteEEPROM() {
         i++;
     }
     EEPROM[CONF0_PIN_ADDR + i] = 0;
-    EEPROM.put(CONF0_DF_ADDR, app.DF);
     EEPROM.put(CONF0_DI_ADDR, app.DI);
+    EEPROM.put(CONF0_DF_ADDR, app.DF);
     EEPROM.put(CONF0_IDLE_COLOR_ON_ADDR, app.idleColorOn);
     EEPROM.put(CONF0_IDLE_COLOR_OFF_ADDR, app.idleColorOff);
     EEPROM.put(CONF0_IDLE_TIME_ON_ADDR, app.idleTicksOn);
@@ -132,8 +132,8 @@ void dumpVars(AsnLParser& p, AsnLWriter& w) {
     w.integer(1, 1); // Status OK
     w.structure();
     w.string(app.pinCode);
-    w.integer(2, app.DF);
     w.integer(2, app.DI);
+    w.integer(2, app.DF);
     w.integer(4, app.idleColorOn);
     w.integer(4, app.idleColorOff);
     w.integer(2, app.idleTicksOn);
@@ -247,8 +247,8 @@ static void conf0Dialog() {
 
 void conf0Configure() {
     app.pinCode = "000";
-    app.DF = 2000;
     app.DI = 1000;
+    app.DF = 2000;
     app.idleColorOn  = 0x333333;
     app.idleColorOff = 0x111111;
     app.idleTicksOn   = 20;
