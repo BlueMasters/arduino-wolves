@@ -18,7 +18,7 @@
  *
  *****************************************************************************/
 
-#define VERSION "1.1.3b"
+#define VERSION "1.2.0"
 #define ONBOARD_LED 13
 
 #include <Arduino.h>
