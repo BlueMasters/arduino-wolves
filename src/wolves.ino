@@ -23,7 +23,6 @@
 
 #include <Arduino.h>
 #include <Streaming.h>
-#include <EEPROM.h>
 #include "App.h"
 #include "Conf0.h"
 #include "LED.h"
@@ -34,6 +33,7 @@
 #include "RemoteControl.h"
 #include "LearnModeHandler.h"
 #include "AsnLMsg.h"
+#include "EEPROM.h"
 
 /***************************************************************************
  * CAVEAT: The librairie RemoteControl uses the Timer2. So pins 9 and 10
