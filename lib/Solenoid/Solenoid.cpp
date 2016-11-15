@@ -19,8 +19,8 @@
 #include "App.h"
 
 // Give time for the disk to fall out of the RFID sensor field
-#define SOLENOID_WAITING_TIME 1000 // msec
-#define EMERGENCY_OPEN 5000 // msec
+#define SOLENOID_WAITING_TIME 200 // msec
+#define EMERGENCY_OPEN 2000 // msec
 
 bool Solenoid::_mutexSet = 0;
 
